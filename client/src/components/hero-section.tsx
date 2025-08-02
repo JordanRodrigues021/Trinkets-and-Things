@@ -24,7 +24,7 @@ export default function HeroSection() {
           <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto px-4">
             Discover our collection of premium 3D printed products, from functional prototypes to artistic masterpieces
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button 
               size="lg"
               onClick={() => scrollToSection('products')}
@@ -32,7 +32,6 @@ export default function HeroSection() {
             >
               Explore Products
             </Button>
-            
           </div>
         </div>
       </div>

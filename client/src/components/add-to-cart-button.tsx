@@ -11,9 +11,10 @@ type Product = Database['public']['Tables']['products']['Row'];
 interface AddToCartButtonProps {
   product: Product;
   className?: string;
+  onAddToCart?: () => void;
 }
 
-export default function AddToCartButton({ product, className = '' }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, className = '', onAddToCart }: AddToCartButtonProps) {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const { addItem } = useCart();
   const { toast } = useToast();
@@ -51,6 +52,11 @@ export default function AddToCartButton({ product, className = '' }: AddToCartBu
 
     // Reset color selection for next add
     setSelectedColor('');
+    
+    // Call the onAddToCart callback if provided (to close modal)
+    if (onAddToCart) {
+      onAddToCart();
+    }
   };
 
   if (availableColors.length === 0) {

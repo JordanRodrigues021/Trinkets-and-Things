@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Product3DViewer from "@/components/product-3d-viewer";
 import AddToCartButton from "@/components/add-to-cart-button";
@@ -32,22 +32,7 @@ export default function ProductModal() {
     };
   }, []);
 
-  const handleRequestQuote = () => {
-    const subject = `Quote Request for ${selectedProduct?.name}`;
-    const body = `Hi, I'm interested in getting a quote for the ${selectedProduct?.name}. 
 
-Product Details:
-- Name: ${selectedProduct?.name}
-- Price: $${selectedProduct?.price}
-- Color: ${selectedColor}
-
-Please let me know about availability and any customization options.
-
-Thank you!`;
-    
-    const mailtoUrl = `mailto:hello@3dcreationsstudio.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoUrl);
-  };
 
   const handleAddToWishlist = () => {
     toast({
@@ -153,17 +138,13 @@ Thank you!`;
             </div>
             
             <div className="space-y-4">
-              <AddToCartButton product={selectedProduct} className="w-full" />
+              <AddToCartButton 
+                product={selectedProduct} 
+                className="w-full"
+                onAddToCart={() => setIsOpen(false)}
+              />
               
-              <div className="flex space-x-4">
-                <Button 
-                  variant="outline"
-                  className="flex-1"
-                  onClick={handleRequestQuote}
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Request Quote
-                </Button>
+              <div className="flex justify-center">
                 <Button 
                   variant="outline"
                   onClick={handleAddToWishlist}

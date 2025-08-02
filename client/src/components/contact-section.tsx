@@ -8,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
+import { Instagram, Linkedin } from "lucide-react";
 import { z } from "zod";
 
 const contactSchema = z.object({
@@ -74,32 +74,20 @@ export default function ContactSection() {
 
   const contactInfo = [
     {
-      icon: MapPin,
-      title: "Studio Address",
-      content: "123 Creative Street, Tech District, City 12345",
-    },
-    {
       icon: Phone,
       title: "Phone Number",
-      content: "+1 (555) 123-4567",
+      content: "7718889219",
     },
     {
       icon: Mail,
       title: "Email Address",
-      content: "hello@3dcreationsstudio.com",
-    },
-    {
-      icon: Clock,
-      title: "Business Hours",
-      content: "Mon-Fri: 9AM-6PM, Sat: 10AM-4PM",
+      content: "jordanrodrigues021@gmail.com",
     },
   ];
 
   const socialLinks = [
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Youtube, href: "#", label: "YouTube" },
+    { icon: Instagram, href: "https://www.instagram.com/trinketsandthings.co.in/", label: "Instagram" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/trinkets-and-things", label: "LinkedIn" },
   ];
 
   return (
