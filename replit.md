@@ -22,6 +22,7 @@ This project has been fully configured for Netlify static deployment with Supaba
 - **Product Categories Section**: Removed per user request - products now displayed directly in gallery
 - **WhatsApp Order Notifications**: Serverless WhatsApp messaging system using Netlify Functions and Twilio API
 - **Unified Color System**: Centralized color mapping system with 30+ colors and consistent swatch display
+- **Customizable Products**: Admin can mark products as customizable, allowing customers to add custom text (perfect for keychains, nameplates, etc.)
 
 DO NOT modify the deployment configuration without reading the agent guide first.
 

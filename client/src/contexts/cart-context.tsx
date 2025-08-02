@@ -6,6 +6,7 @@ export interface CartItem {
   price: number;
   salePrice?: number;
   selectedColor: string;
+  customName?: string;
   quantity: number;
   image: string;
 }
@@ -13,8 +14,8 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (productId: string, selectedColor: string) => void;
-  updateQuantity: (productId: string, selectedColor: string, quantity: number) => void;
+  removeItem: (productId: string, selectedColor: string, customName?: string) => void;
+  updateQuantity: (productId: string, selectedColor: string, customName: string | undefined, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -53,7 +54,8 @@ export function CartProvider({ children }: CartProviderProps) {
       const existingItemIndex = currentCart.findIndex(
         cartItem => 
           cartItem.productId === item.productId && 
-          cartItem.selectedColor === item.selectedColor
+          cartItem.selectedColor === item.selectedColor &&
+          cartItem.customName === item.customName
       );
 
       if (existingItemIndex >= 0) {
@@ -68,23 +70,23 @@ export function CartProvider({ children }: CartProviderProps) {
     });
   };
 
-  const removeItem = (productId: string, selectedColor: string) => {
+  const removeItem = (productId: string, selectedColor: string, customName?: string) => {
     setCart(currentCart => 
       currentCart.filter(item => 
-        !(item.productId === productId && item.selectedColor === selectedColor)
+        !(item.productId === productId && item.selectedColor === selectedColor && item.customName === customName)
       )
     );
   };
 
-  const updateQuantity = (productId: string, selectedColor: string, quantity: number) => {
+  const updateQuantity = (productId: string, selectedColor: string, customName: string | undefined, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(productId, selectedColor);
+      removeItem(productId, selectedColor, customName);
       return;
     }
 
     setCart(currentCart =>
       currentCart.map(item =>
-        item.productId === productId && item.selectedColor === selectedColor
+        item.productId === productId && item.selectedColor === selectedColor && item.customName === customName
           ? { ...item, quantity }
           : item
       )

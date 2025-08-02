@@ -101,6 +101,7 @@ export default function Checkout() {
         product_name: item.productName,
         product_price: (item.salePrice || item.price).toString(),
         selected_color: item.selectedColor,
+        custom_name: item.customName || null,
         quantity: item.quantity,
       }));
 

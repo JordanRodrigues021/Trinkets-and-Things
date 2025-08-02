@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Plus, X, Upload } from 'lucide-react';
@@ -29,6 +30,7 @@ const productSchema = z.object({
   weight: z.string().min(1, "Weight is required"),
   print_time: z.string().min(1, "Print time is required"),
   featured: z.number().min(0).max(2),
+  customizable: z.number().min(0).max(1),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -58,6 +60,7 @@ export default function AdminProductForm() {
       weight: '',
       print_time: '',
       featured: 0,
+      customizable: 0,
     },
   });
 
@@ -102,6 +105,7 @@ export default function AdminProductForm() {
         weight: data.weight,
         print_time: data.print_time,
         featured: data.featured,
+        customizable: data.customizable || 0,
       });
     } catch (error) {
       toast({
@@ -306,6 +310,20 @@ export default function AdminProductForm() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="customizable"
+                  checked={form.watch('customizable') === 1}
+                  onCheckedChange={(checked) => form.setValue('customizable', checked ? 1 : 0)}
+                />
+                <Label 
+                  htmlFor="customizable"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Allow customers to add custom text (e.g., for keychains, nameplates)
+                </Label>
               </div>
             </CardContent>
           </Card>

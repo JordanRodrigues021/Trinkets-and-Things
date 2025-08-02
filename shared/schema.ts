@@ -14,6 +14,7 @@ export const products = pgTable("products", {
   disabledColors: text("disabled_colors").array().notNull().default(sql`'{}'`),
   images: text("images").array().notNull(),
   featured: integer("featured").default(0), // 0 = normal, 1 = featured, 2 = popular
+  customizable: integer("customizable").default(0), // 0 = not customizable, 1 = customizable
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -79,6 +80,7 @@ export const orderItems = pgTable("order_items", {
   productName: text("product_name").notNull(),
   productPrice: decimal("product_price", { precision: 10, scale: 2 }).notNull(),
   selectedColor: text("selected_color").notNull(),
+  customName: text("custom_name"), // For customizable products
   quantity: integer("quantity").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

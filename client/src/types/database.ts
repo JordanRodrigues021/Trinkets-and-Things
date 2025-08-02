@@ -17,6 +17,7 @@ export interface Database {
           disabled_colors: string[];
           images: string[];
           featured: number;
+          customizable: number;
           created_at: string;
         };
         Insert: {
@@ -34,6 +35,7 @@ export interface Database {
           disabled_colors?: string[];
           images: string[];
           featured?: number;
+          customizable?: number;
           created_at?: string;
         };
         Update: {
@@ -51,6 +53,7 @@ export interface Database {
           disabled_colors?: string[];
           images?: string[];
           featured?: number;
+          customizable?: number;
           created_at?: string;
         };
       };
@@ -132,6 +135,7 @@ export interface Database {
           product_name: string;
           product_price: string;
           selected_color: string;
+          custom_name: string | null;
           quantity: number;
           created_at: string;
         };
@@ -142,6 +146,7 @@ export interface Database {
           product_name: string;
           product_price: string;
           selected_color: string;
+          custom_name?: string | null;
           quantity?: number;
           created_at?: string;
         };
@@ -152,6 +157,7 @@ export interface Database {
           product_name?: string;
           product_price?: string;
           selected_color?: string;
+          custom_name?: string | null;
           quantity?: number;
           created_at?: string;
         };

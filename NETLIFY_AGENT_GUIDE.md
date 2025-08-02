@@ -123,6 +123,16 @@ interface ImportMeta {
 - `client/src/components/product-modal.tsx`: Updated to use unified color system
 - **Features**: Case-insensitive matching, fallback colors, hex and Tailwind class support
 
+### Customizable Products System:
+- `shared/schema.ts`: Added `customizable` field to products table and `custom_name` to order_items
+- `client/src/types/database.ts`: Updated TypeScript interfaces for customizable products
+- `client/src/pages/admin-product-form.tsx`: Added checkbox for marking products as customizable
+- `client/src/components/add-to-cart-button.tsx`: Custom name input for customizable products
+- `client/src/contexts/cart-context.tsx`: Updated cart system to handle custom names
+- `client/src/components/cart-sidebar.tsx`: Displays custom names in cart items
+- `client/src/pages/checkout.tsx`: Saves custom names to order items
+- **Database Changes Required**: Add `customizable` column to products table and `custom_name` to order_items table
+
 ### Database Schema Application Process:
 1. Go to Supabase Dashboard > SQL Editor
 2. Run the complete `supabase-schema.sql` file
@@ -388,6 +398,19 @@ Before making any changes, verify:
   - Added 30+ color mappings including metals, gradients, and special materials
   - Implemented case-insensitive color matching with fallbacks
 - **Result**: All color swatches now display correct colors consistently
+
+### 2025-01-02: Customizable Products Feature
+- **Feature**: Added customizable products functionality for personalized items
+- **Implementation**:
+  - Added `customizable` field to products database schema
+  - Added `custom_name` field to order_items for storing custom text
+  - Created admin checkbox interface for marking products as customizable
+  - Implemented custom name input in product ordering flow
+  - Updated cart system to handle custom names properly
+  - Modified checkout process to save custom names to orders
+- **UI Changes**: Custom text input appears for customizable products with validation
+- **Target Products**: License plate keychains, soccer keychains, and other personalizable items
+- **Database Migration**: Requires adding customizable column to products table
 
 ### 2025-01-02: Logo Update
 - **Change**: Updated website logo to custom circular "Trinkets and Things" logo

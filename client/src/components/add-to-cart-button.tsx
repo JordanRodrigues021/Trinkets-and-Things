@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/cart-context';
@@ -17,6 +19,7 @@ interface AddToCartButtonProps {
 
 export default function AddToCartButton({ product, className = '', onAddToCart }: AddToCartButtonProps) {
   const [selectedColor, setSelectedColor] = useState<string>('');
+  const [customName, setCustomName] = useState<string>('');
   const { addItem } = useCart();
   const { toast } = useToast();
 
@@ -34,6 +37,16 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
       return;
     }
 
+    // Check if product is customizable and requires custom name
+    if (product.customizable === 1 && !customName.trim()) {
+      toast({
+        title: "Please enter custom text",
+        description: "This item requires custom text to be added",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const price = parseFloat(product.price);
     const salePrice = product.sale_price ? parseFloat(product.sale_price) : undefined;
 
@@ -43,16 +56,19 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
       price,
       salePrice,
       selectedColor,
+      customName: product.customizable === 1 ? customName.trim() : undefined,
       image: product.images[0] || '',
     });
 
+    const customText = product.customizable === 1 && customName.trim() ? ` with "${customName.trim()}"` : '';
     toast({
       title: "Added to cart!",
-      description: `${product.name} (${selectedColor}) has been added to your cart.`,
+      description: `${product.name} (${selectedColor})${customText} has been added to your cart.`,
     });
 
-    // Reset color selection for next add
+    // Reset selections for next add
     setSelectedColor('');
+    setCustomName('');
     
     // Call the onAddToCart callback if provided (to close modal)
     if (onAddToCart) {
@@ -69,41 +85,59 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
   }
 
   return (
-    <div className={`flex gap-2 ${className}`}>
-      <div className="flex-1">
-        <Select value={selectedColor} onValueChange={setSelectedColor}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select color">
-              {selectedColor && (
-                <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
-                  {selectedColor}
-                </div>
-              )}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {availableColors.map((color) => (
-              <SelectItem key={color} value={color}>
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-4 h-4 rounded-full border border-gray-300"
-                    style={{
-                      backgroundColor: getColorHex(color)
-                    }}
-                  />
-                  {color}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className={`space-y-3 ${className}`}>
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <Select value={selectedColor} onValueChange={setSelectedColor}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select color">
+                {selectedColor && (
+                  <div className="flex items-center gap-2">
+                    <Palette className="w-4 h-4" />
+                    {selectedColor}
+                  </div>
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {availableColors.map((color) => (
+                <SelectItem key={color} value={color}>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-full border border-gray-300"
+                      style={{
+                        backgroundColor: getColorHex(color)
+                      }}
+                    />
+                    {color}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <Button onClick={handleAddToCart} disabled={!selectedColor || (product.customizable === 1 && !customName.trim())}>
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          Add to Cart
+        </Button>
       </div>
-      
-      <Button onClick={handleAddToCart} disabled={!selectedColor}>
-        <ShoppingCart className="w-4 h-4 mr-2" />
-        Add to Cart
-      </Button>
+
+      {/* Custom name input for customizable products */}
+      {product.customizable === 1 && (
+        <div className="space-y-1">
+          <Label htmlFor="customName" className="text-sm font-medium">
+            Enter custom text for this item *
+          </Label>
+          <Input
+            id="customName"
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            placeholder="e.g., Your name, message, etc."
+            className="w-full"
+          />
+        </div>
+      )}
     </div>
   );
 }
