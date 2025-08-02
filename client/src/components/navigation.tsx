@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, ShoppingCart } from "lucide-react";
+import CartSidebar from './cart-sidebar';
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,6 +71,11 @@ export default function Navigation() {
               />
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             </form>
+            <CartSidebar>
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+              </Button>
+            </CartSidebar>
             <Button
               variant="ghost"
               size="icon"

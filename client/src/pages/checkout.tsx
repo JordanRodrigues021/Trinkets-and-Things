@@ -1,0 +1,314 @@
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/hooks/use-cart';
+import { supabase } from '@/lib/supabase';
+import { ArrowLeft, CreditCard, Truck, QrCode } from 'lucide-react';
+import PriceDisplay from '@/components/price-display';
+
+const checkoutSchema = z.object({
+  customerName: z.string().min(2, 'Name must be at least 2 characters'),
+  customerEmail: z.string().email('Invalid email address'),
+  customerPhone: z.string().regex(/^\+?[\d\s\-\(\)]{10,}$/, 'Invalid phone number'),
+  paymentMethod: z.enum(['cash', 'upi']),
+  notes: z.string().optional(),
+});
+
+type CheckoutForm = z.infer<typeof checkoutSchema>;
+
+export default function Checkout() {
+  const [, setLocation] = useLocation();
+  const { cart, clearCart, getTotalPrice } = useCart();
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [upiQrCode, setUpiQrCode] = useState<string>('');
+
+  const form = useForm<CheckoutForm>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      customerName: '',
+      customerEmail: '',
+      customerPhone: '',
+      paymentMethod: 'cash',
+      notes: '',
+    },
+  });
+
+  // Load UPI QR code on mount
+  useState(() => {
+    const loadUpiQrCode = async () => {
+      try {
+        const { data } = await supabase
+          .from('site_settings')
+          .select('setting_value')
+          .eq('setting_key', 'upi_qr_code')
+          .single();
+        
+        if (data) {
+          setUpiQrCode(data.setting_value);
+        }
+      } catch (error) {
+        console.error('Error loading UPI QR code:', error);
+      }
+    };
+    loadUpiQrCode();
+  });
+
+  const onSubmit = async (data: CheckoutForm) => {
+    if (cart.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Please add items to your cart before checkout",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const totalAmount = getTotalPrice();
+
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: data.customerName,
+          customer_email: data.customerEmail,
+          customer_phone: data.customerPhone,
+          total_amount: totalAmount.toString(),
+          payment_method: data.paymentMethod,
+          notes: data.notes || null,
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = cart.map(item => ({
+        order_id: order.id,
+        product_id: item.productId,
+        product_name: item.productName,
+        product_price: (item.salePrice || item.price).toString(),
+        selected_color: item.selectedColor,
+        quantity: item.quantity,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // Clear cart and redirect
+      clearCart();
+
+      toast({
+        title: "Order placed successfully!",
+        description: data.paymentMethod === 'upi' 
+          ? "Please complete UPI payment. Your order will be confirmed within 24 hours."
+          : "Your order has been placed and will be confirmed soon.",
+      });
+
+      setLocation(`/order-confirmation/${order.id}`);
+
+    } catch (error: any) {
+      console.error('Order creation error:', error);
+      toast({
+        title: "Order failed",
+        description: error.message || "Failed to place order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-background py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto text-center">
+            <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
+            <p className="text-muted-foreground mb-6">Add some products to your cart before checkout</p>
+            <Button onClick={() => setLocation('/')}>Continue Shopping</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background py-8">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={() => setLocation('/')}
+            className="mb-6"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Shop
+          </Button>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Order Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {cart.map((item) => (
+                  <div key={`${item.productId}-${item.selectedColor}`} className="flex gap-3 p-3 border rounded-lg">
+                    <img
+                      src={item.image}
+                      alt={item.productName}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium">{item.productName}</h4>
+                      <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
+                      <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                      <PriceDisplay 
+                        price={item.price.toString()} 
+                        salePrice={item.salePrice?.toString()} 
+                        className="text-sm mt-1"
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center text-xl font-bold">
+                    <span>Total:</span>
+                    <span>₹{getTotalPrice().toLocaleString('en-IN')}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    <Truck className="w-4 h-4 inline mr-1" />
+                    Free pickup from A Level Classroom at Don Bosco International School
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Checkout Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Checkout Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div>
+                    <Label htmlFor="customerName">Full Name *</Label>
+                    <Input
+                      id="customerName"
+                      {...form.register('customerName')}
+                      placeholder="Enter your full name"
+                    />
+                    {form.formState.errors.customerName && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {form.formState.errors.customerName.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="customerEmail">Email Address *</Label>
+                    <Input
+                      id="customerEmail"
+                      type="email"
+                      {...form.register('customerEmail')}
+                      placeholder="Enter your email"
+                    />
+                    {form.formState.errors.customerEmail && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {form.formState.errors.customerEmail.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="customerPhone">Phone Number *</Label>
+                    <Input
+                      id="customerPhone"
+                      {...form.register('customerPhone')}
+                      placeholder="Enter your phone number"
+                    />
+                    {form.formState.errors.customerPhone && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {form.formState.errors.customerPhone.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label>Payment Method *</Label>
+                    <RadioGroup
+                      value={form.watch('paymentMethod')}
+                      onValueChange={(value) => form.setValue('paymentMethod', value as 'cash' | 'upi')}
+                      className="mt-2"
+                    >
+                      <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                        <RadioGroupItem value="cash" id="cash" />
+                        <Label htmlFor="cash" className="flex items-center gap-2 cursor-pointer">
+                          <CreditCard className="w-4 h-4" />
+                          Cash on Delivery (Free)
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                        <RadioGroupItem value="upi" id="upi" />
+                        <Label htmlFor="upi" className="flex items-center gap-2 cursor-pointer">
+                          <QrCode className="w-4 h-4" />
+                          UPI Payment (Pay Now)
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {form.watch('paymentMethod') === 'upi' && upiQrCode && (
+                    <div className="p-4 border rounded-lg bg-muted">
+                      <h4 className="font-medium mb-2">UPI Payment</h4>
+                      <div className="text-center">
+                        <img src={upiQrCode} alt="UPI QR Code" className="mx-auto mb-2 max-w-48" />
+                        <p className="text-sm text-muted-foreground">
+                          Scan to pay ₹{getTotalPrice().toLocaleString('en-IN')}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Order will be confirmed within 24 hours after payment verification
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="notes">Special Instructions (Optional)</Label>
+                    <Textarea
+                      id="notes"
+                      {...form.register('notes')}
+                      placeholder="Any special requests or notes..."
+                    />
+                  </div>
+
+                  <Button type="submit" disabled={submitting} className="w-full" size="lg">
+                    {submitting ? 'Placing Order...' : 
+                     form.watch('paymentMethod') === 'upi' ? 'Place Order & Pay' : 'Place Order'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
-import type { Product } from "@shared/schema";
+import AddToCartButton from "@/components/add-to-cart-button";
+import PriceDisplay from "@/components/price-display";
+import type { Database } from "@/types/database";
+
+type Product = Database['public']['Tables']['products']['Row'];
 
 interface ProductGalleryProps {
   onProductSelect?: (product: Product) => void;
@@ -48,7 +52,7 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
       case 'popular':
         return b.featured - a.featured;
       default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     }
   }) : [];
 
@@ -167,19 +171,37 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-secondary mb-2">{product.name}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-primary">${product.price}</span>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
+                  {getBadgeText(product.featured) && (
+                    <Badge variant={getBadgeVariant(product.featured)}>
+                      {getBadgeText(product.featured)}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {product.description}
+                </p>
+                
+                <div className="mb-4">
+                  <PriceDisplay 
+                    price={product.price} 
+                    salePrice={product.sale_price}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <AddToCartButton product={product} />
                   <Button 
-                    size="sm"
-                    className="bg-primary hover:bg-blue-700"
+                    size="sm" 
+                    variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleProductClick(product);
                     }}
+                    className="w-full flex items-center gap-2"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-4 h-4" />
                     View Details
                   </Button>
                 </div>

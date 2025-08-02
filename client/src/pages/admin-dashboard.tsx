@@ -6,18 +6,24 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Contact = Database['public']['Tables']['contacts']['Row'];
+type Order = Database['public']['Tables']['orders']['Row'];
+type OrderItem = Database['public']['Tables']['order_items']['Row'];
+type SiteSetting = Database['public']['Tables']['site_settings']['Row'];
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'products' | 'contacts'>('products');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'contacts' | 'settings'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [settings, setSettings] = useState<SiteSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [importing, setImporting] = useState(false);
@@ -33,8 +39,10 @@ export default function AdminDashboard() {
 
   // Load data
   useEffect(() => {
+    loadOrders();
     loadProducts();
     loadContacts();
+    loadSettings();
   }, []);
 
   const loadProducts = async () => {
@@ -72,6 +80,98 @@ export default function AdminDashboard() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, updates: { payment_status?: string; order_status?: string }) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update(updates)
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Order updated",
+        description: "Order status has been updated successfully",
+      });
+
+      loadOrders(); // Refresh orders
+    } catch (error) {
+      toast({
+        title: "Error updating order",
+        description: "Failed to update order status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateSetting = async (key: string, value: string) => {
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .update({ setting_value: value })
+        .eq('setting_key', key);
+
+      if (error) throw error;
+
+      toast({
+        title: "Setting updated",
+        description: "Site setting has been updated successfully",
+      });
+
+      loadSettings(); // Refresh settings
+    } catch (error) {
+      toast({
+        title: "Error updating setting",
+        description: "Failed to update site setting",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadOrders = async () => {
+    try {
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (ordersError) throw ordersError;
+      setOrders(ordersData || []);
+
+      // Load order items
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('order_items')
+        .select('*');
+
+      if (itemsError) throw itemsError;
+      setOrderItems(itemsData || []);
+    } catch (error) {
+      toast({
+        title: "Error loading orders",
+        description: "Failed to fetch orders from database",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .order('setting_key');
+
+      if (error) throw error;
+      setSettings(data || []);
+    } catch (error) {
+      toast({
+        title: "Error loading settings",
+        description: "Failed to fetch settings from database",
+        variant: "destructive",
+      });
     }
   };
 
@@ -337,6 +437,14 @@ export default function AdminDashboard() {
         <div className="mb-6">
           <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
             <Button
+              variant={activeTab === 'orders' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('orders')}
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Orders ({orders.length})
+            </Button>
+            <Button
               variant={activeTab === 'products' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setActiveTab('products')}
@@ -351,6 +459,14 @@ export default function AdminDashboard() {
             >
               <Users className="w-4 h-4 mr-2" />
               Contacts ({contacts.length})
+            </Button>
+            <Button
+              variant={activeTab === 'settings' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('settings')}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
             </Button>
           </div>
         </div>
@@ -549,6 +665,176 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             )}
+          </div>
+        )}
+
+        {activeTab === 'orders' && (
+          <div className="space-y-4">
+            {orders.map((order) => {
+              const items = orderItems.filter(item => item.order_id === order.id);
+              return (
+                <Card key={order.id}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-semibold text-lg">Order #{order.id.slice(-8)}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {order.customer_name} • {order.customer_email} • {order.customer_phone}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString()}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Badge variant={
+                          order.payment_status === 'confirmed' ? 'default' :
+                          order.payment_status === 'pending' ? 'secondary' : 'destructive'
+                        }>
+                          {order.payment_status}
+                        </Badge>
+                        <Badge variant={
+                          order.order_status === 'completed' ? 'default' :
+                          order.order_status === 'ready' ? 'secondary' :
+                          order.order_status === 'confirmed' ? 'outline' : 'destructive'
+                        }>
+                          {order.order_status}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="border rounded-lg p-4 mb-4 bg-muted/50">
+                      <h4 className="font-medium mb-2">Order Items:</h4>
+                      {items.map((item) => (
+                        <div key={item.id} className="flex justify-between items-center py-1">
+                          <span className="text-sm">
+                            {item.product_name} ({item.selected_color}) x{item.quantity}
+                          </span>
+                          <span className="text-sm font-medium">₹{parseFloat(item.product_price).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div className="border-t pt-2 mt-2 flex justify-between font-semibold">
+                        <span>Total:</span>
+                        <span>₹{parseFloat(order.total_amount).toFixed(2)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Payment:</span>
+                      <Badge variant="outline">{order.payment_method.toUpperCase()}</Badge>
+                      {order.payment_method === 'upi' && order.payment_status === 'pending' && (
+                        <span className="text-xs text-muted-foreground">
+                          (24h confirmation window)
+                        </span>
+                      )}
+                    </div>
+                    
+                    {order.notes && (
+                      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                        <p className="text-sm"><strong>Notes:</strong> {order.notes}</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2 mt-4">
+                      {order.payment_status === 'pending' && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => updateOrderStatus(order.id, { payment_status: 'confirmed' })}
+                          >
+                            <Check className="w-4 h-4 mr-2" />
+                            Confirm Payment
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => updateOrderStatus(order.id, { payment_status: 'cancelled' })}
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Cancel Payment
+                          </Button>
+                        </>
+                      )}
+                      
+                      {order.payment_status === 'confirmed' && order.order_status === 'placed' && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateOrderStatus(order.id, { order_status: 'confirmed' })}
+                        >
+                          Confirm Order
+                        </Button>
+                      )}
+                      
+                      {order.order_status === 'confirmed' && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateOrderStatus(order.id, { order_status: 'ready' })}
+                        >
+                          Mark Ready
+                        </Button>
+                      )}
+                      
+                      {order.order_status === 'ready' && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateOrderStatus(order.id, { order_status: 'completed' })}
+                        >
+                          Complete Order
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+            
+            {orders.length === 0 && (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
+                  <p className="text-muted-foreground">
+                    Orders will appear here when customers make purchases
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {settings.map((setting) => (
+                  <div key={setting.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium capitalize">
+                        {setting.setting_key.replace(/_/g, ' ')}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {setting.setting_value}
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newValue = prompt(`Enter new value for ${setting.setting_key}:`, setting.setting_value);
+                        if (newValue !== null) {
+                          updateSetting(setting.setting_key, newValue);
+                        }
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>

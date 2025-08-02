@@ -6,6 +6,8 @@ import Home from "@/pages/home";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminProductForm from "@/pages/admin-product-form";
+import Checkout from "@/pages/checkout";
+import OrderConfirmation from "@/pages/order-confirmation";
 
 function Router() {
   return (
@@ -15,6 +17,8 @@ function Router() {
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/products/new" component={AdminProductForm} />
       <Route path="/admin/products/:id/edit" component={AdminProductForm} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/order-confirmation/:orderId" component={OrderConfirmation} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Mail, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Product3DViewer from "@/components/product-3d-viewer";
+import AddToCartButton from "@/components/add-to-cart-button";
+import PriceDisplay from "@/components/price-display";
 import type { Database } from "@/types/database";
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -105,7 +107,12 @@ Thank you!`;
                   </Badge>
                 )}
               </div>
-              <p className="text-4xl font-bold text-primary mb-4">${selectedProduct.price}</p>
+              <div className="mb-4">
+                <PriceDisplay 
+                  price={selectedProduct.price} 
+                  salePrice={selectedProduct.sale_price}
+                />
+              </div>
               <p className="text-gray-600 text-lg">{selectedProduct.description}</p>
             </div>
             
@@ -122,7 +129,9 @@ Thank you!`;
             <div>
               <h4 className="text-lg font-semibold text-secondary mb-3">Available Colors</h4>
               <div className="flex flex-wrap gap-3">
-                {selectedProduct.colors.map((color: string) => (
+                {selectedProduct.colors.filter(color => 
+                  !(selectedProduct.disabled_colors || []).includes(color)
+                ).map((color: string) => (
                   <button
                     key={color}
                     className={`w-8 h-8 rounded-full border-2 hover:border-primary transition-colors ${
@@ -136,22 +145,32 @@ Thank you!`;
               {selectedColor && (
                 <p className="text-sm text-gray-600 mt-2">Selected: {selectedColor}</p>
               )}
+              {(selectedProduct.disabled_colors || []).length > 0 && (
+                <p className="text-sm text-red-600 mt-2">
+                  Out of stock: {(selectedProduct.disabled_colors || []).join(', ')}
+                </p>
+              )}
             </div>
             
-            <div className="flex space-x-4">
-              <Button 
-                className="flex-1 bg-primary hover:bg-blue-700 text-white"
-                onClick={handleRequestQuote}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Request Quote
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={handleAddToWishlist}
-              >
-                <Heart className="w-4 h-4" />
-              </Button>
+            <div className="space-y-4">
+              <AddToCartButton product={selectedProduct} className="w-full" />
+              
+              <div className="flex space-x-4">
+                <Button 
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleRequestQuote}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Request Quote
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={handleAddToWishlist}
+                >
+                  <Heart className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
