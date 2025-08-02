@@ -279,12 +279,50 @@ export default function AdminDashboard() {
     }
   };
 
+  const toggleColorDisability = async (productId: string, color: string) => {
+    try {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const currentDisabled = product.disabled_colors || [];
+      const newDisabled = currentDisabled.includes(color)
+        ? currentDisabled.filter(c => c !== color)
+        : [...currentDisabled, color];
+
+      const { error } = await supabase
+        .from('products')
+        .update({ disabled_colors: newDisabled })
+        .eq('id', productId);
+
+      if (error) throw error;
+
+      // Update local state
+      setProducts(products.map(p => 
+        p.id === productId 
+          ? { ...p, disabled_colors: newDisabled }
+          : p
+      ));
+
+      toast({
+        title: "Color updated",
+        description: `${color} has been ${currentDisabled.includes(color) ? 'enabled' : 'disabled'}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating color",
+        description: "Failed to update color availability",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleExportProducts = () => {
-    const csvHeaders = 'name,description,price,category,material,dimensions,weight,print_time,colors,images,featured\n';
+    const csvHeaders = 'name,description,price,category,colors,disabled_colors,images,featured\n';
     const csvData = products.map(product => {
       const colors = product.colors.join(';');
+      const disabledColors = (product.disabled_colors || []).join(';');
       const images = product.images.join(';');
-      return `"${product.name}","${product.description}",${product.price},${product.category},"${product.material}","${product.dimensions}","${product.weight}","${product.print_time}","${colors}","${images}",${product.featured}`;
+      return `"${product.name}","${product.description}",${product.price},${product.category},"${colors}","${disabledColors}","${images}",${product.featured}`;
     }).join('\n');
 
     const blob = new Blob([csvHeaders + csvData], { type: 'text/csv' });
@@ -662,8 +700,32 @@ export default function AdminDashboard() {
                               </Badge>
                             )}
                           </div>
+                          <div className="mb-3">
+                            <h4 className="text-sm font-medium mb-2">Color Availability:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {product.colors.map((color) => {
+                                const isDisabled = product.disabled_colors?.includes(color);
+                                return (
+                                  <Button
+                                    key={color}
+                                    variant={isDisabled ? "outline" : "default"}
+                                    size="sm"
+                                    className={`text-xs ${
+                                      isDisabled 
+                                        ? 'opacity-50 hover:opacity-75' 
+                                        : ''
+                                    }`}
+                                    onClick={() => toggleColorDisability(product.id, color)}
+                                  >
+                                    {isDisabled ? <X className="w-3 h-3 mr-1" /> : <Check className="w-3 h-3 mr-1" />}
+                                    {color}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          </div>
                           <div className="text-sm text-muted-foreground">
-                            <span>{product.material} • {product.dimensions} • {product.images.length} images</span>
+                            <span>{product.images.length} images</span>
                           </div>
                         </div>
                         

@@ -10,10 +10,6 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   salePrice: decimal("sale_price", { precision: 10, scale: 2 }),
   category: text("category").notNull(), // 'functional', 'artistic', 'prototypes'
-  material: text("material").notNull(),
-  dimensions: text("dimensions").notNull(),
-  weight: text("weight").notNull(),
-  printTime: text("print_time").notNull(),
   colors: text("colors").array().notNull(),
   disabledColors: text("disabled_colors").array().notNull().default(sql`'{}'`),
   images: text("images").array().notNull(),
