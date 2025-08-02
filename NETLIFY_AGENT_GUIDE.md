@@ -118,6 +118,7 @@ Cannot find module '@tailwindcss/typography'
 ### ✅ Allowed Dependencies (client/package.json)
 - React ecosystem: `react`, `react-dom`, `@types/react`, etc.
 - Supabase: `@supabase/supabase-js`
+- 3D Graphics: `three` (Three.js for 3D model viewing)
 - UI components: `@radix-ui/*`, `lucide-react`
 - Styling: `tailwindcss`, `tailwindcss-animate`, `clsx`
 - Forms: `react-hook-form`, `@hookform/resolvers`, `zod`

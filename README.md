@@ -9,8 +9,9 @@ Visit the live site at: `trinketsandthings.netlify.app`
 ## 📋 Features
 
 - **Product Gallery**: Browse 3D printed products across three categories (Functional, Artistic, Prototypes)
+- **3D Model Viewer**: Interactive 3D visualization of products with rotation, zoom, and pan controls
 - **Search & Filter**: Find products by name, description, or category
-- **Product Details**: View detailed specifications, materials, and pricing
+- **Product Details**: View detailed specifications, materials, and pricing with tabbed interface
 - **Contact Form**: Submit inquiries directly to database
 - **Responsive Design**: Optimized for all device sizes
 - **Dark Mode**: Toggle between light and dark themes
@@ -19,6 +20,7 @@ Visit the live site at: `trinketsandthings.netlify.app`
 
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite
+- **3D Graphics**: Three.js for interactive 3D model rendering
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Deployment**: Netlify (Static)

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Product } from "@shared/schema";
+import Product3DViewer from "@/components/product-3d-viewer";
 
 export default function ProductModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,29 +82,17 @@ Thank you!`;
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
           <div>
-            <div className="relative">
-              <img 
-                src={selectedProduct.images[selectedImage]} 
-                alt={selectedProduct.name}
-                className="w-full h-96 object-cover rounded-xl"
-              />
-            </div>
-            
-            {selectedProduct.images.length > 1 && (
-              <div className="flex space-x-2 mt-4">
-                {selectedProduct.images.map((image, index) => (
-                  <img 
-                    key={index}
-                    src={image} 
-                    alt={`${selectedProduct.name} angle ${index + 1}`}
-                    className={`w-20 h-16 object-cover rounded-lg cursor-pointer border-2 transition-colors ${
-                      selectedImage === index ? 'border-primary' : 'border-transparent hover:border-primary'
-                    }`}
-                    onClick={() => setSelectedImage(index)}
-                  />
-                ))}
-              </div>
-            )}
+            <Product3DViewer 
+              product={{
+                id: selectedProduct.id,
+                name: selectedProduct.name,
+                images: selectedProduct.images || [],
+                modelUrl: selectedProduct.modelUrl,
+                category: selectedProduct.category,
+                material: selectedProduct.material,
+                dimensions: selectedProduct.dimensions
+              }}
+            />
           </div>
           
           <div className="space-y-6">

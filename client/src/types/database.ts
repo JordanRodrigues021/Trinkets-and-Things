@@ -14,6 +14,7 @@ export interface Database {
           print_time: string;
           colors: string[];
           images: string[];
+          model_url: string | null;
           featured: number;
           created_at: string;
         };
@@ -29,6 +30,7 @@ export interface Database {
           print_time: string;
           colors: string[];
           images: string[];
+          model_url?: string | null;
           featured?: number;
           created_at?: string;
         };

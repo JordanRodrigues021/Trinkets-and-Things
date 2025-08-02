@@ -18,6 +18,7 @@ interface Product {
   printTime: string;
   colors: string[];
   images: string[];
+  modelUrl?: string | null;
   featured: number;
   createdAt: string;
 }
@@ -60,6 +61,7 @@ export function useProducts(options: UseProductsOptions = {}) {
           printTime: product.print_time,
           colors: product.colors || [],
           images: product.images || [],
+          modelUrl: product.model_url,
           featured: product.featured || 0,
           createdAt: product.created_at,
         }));
@@ -110,6 +112,7 @@ export function useProduct(id: string) {
             printTime: product.print_time,
             colors: product.colors || [],
             images: product.images || [],
+            modelUrl: product.model_url,
             featured: product.featured || 0,
             createdAt: product.created_at,
           };
