@@ -125,6 +125,7 @@ export default function AdminProductForm() {
 
       if (isEditing && params.id) {
         console.log('Updating product with data:', productData);
+        
         const { data: result, error } = await supabase
           .from('products')
           .update(productData)
