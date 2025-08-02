@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+const handler = async (event, context) => {
   console.log('WhatsApp function called:', {
     method: event.httpMethod,
     body: event.body ? 'present' : 'missing',
@@ -154,3 +154,5 @@ Time: ${new Date().toLocaleString()}`;
     };
   }
 };
+
+exports.handler = handler;
