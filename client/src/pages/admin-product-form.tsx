@@ -165,7 +165,7 @@ export default function AdminProductForm() {
       }
 
       setLocation('/admin/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Full error object:', error);
       toast({
         title: "Error saving product",

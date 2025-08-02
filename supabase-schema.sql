@@ -45,24 +45,7 @@ INSERT INTO products (name, description, price, category, material, dimensions, 
 
 ('Kitchen Organizer', 'Multi-compartment utensil storage solution that maximizes kitchen drawer space efficiency.', 40.00, 'functional', 'PETG', '35cm × 25cm × 6cm', '450g', '8 hours', ARRAY['White', 'Black', 'Gray'], ARRAY['https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600'], 0);
 
--- Enable Row Level Security (RLS)
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
-
--- Create policies for products (read-only for public)
-CREATE POLICY "Products are viewable by everyone" ON products
-  FOR SELECT USING (true);
-
--- Create policies for contacts (insert-only for public)
-CREATE POLICY "Anyone can insert contacts" ON contacts
-  FOR INSERT WITH CHECK (true);
-
--- Admin policies for full access to products
-CREATE POLICY "Admin can do everything on products" ON products
-  FOR ALL USING (true)
-  WITH CHECK (true);
-
--- Admin policies for full access to contacts  
-CREATE POLICY "Admin can do everything on contacts" ON contacts
-  FOR ALL USING (true)
-  WITH CHECK (true);
+-- Disable Row Level Security for simplified admin functionality
+-- (In production, you would want proper RLS with authentication)
+ALTER TABLE products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE contacts DISABLE ROW LEVEL SECURITY;
