@@ -20,6 +20,8 @@ This project has been fully configured for Netlify static deployment with Supaba
 - **Mobile Optimization Complete**: All components are fully responsive with mobile-first design
 - **Brand Update**: Logo integrated with "Trinkets and Things" branding (logo + text on desktop, logo only on mobile)
 - **Product Categories Section**: Removed per user request - products now displayed directly in gallery
+- **WhatsApp Order Notifications**: Serverless WhatsApp messaging system using Netlify Functions and Twilio API
+- **Unified Color System**: Centralized color mapping system with 30+ colors and consistent swatch display
 
 DO NOT modify the deployment configuration without reading the agent guide first.
 

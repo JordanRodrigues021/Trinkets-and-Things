@@ -110,6 +110,19 @@ interface ImportMeta {
 - `supabase-schema.sql`: Database schema with RLS DISABLED
 - `client/vite-env.d.ts`: TypeScript environment variable types
 
+### WhatsApp Notifications System:
+- `netlify/functions/send-whatsapp-notification.js`: Serverless function for WhatsApp messaging
+- `client/src/pages/checkout.tsx`: Modified to trigger WhatsApp notifications on order placement
+- `netlify.toml`: Updated with functions path and environment variable placeholders
+- `WHATSAPP_SETUP_GUIDE.md`: Comprehensive setup instructions for Twilio integration
+- **Environment Variables Required**: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, OWNER_WHATSAPP_NUMBER, ADMIN_URL
+
+### Unified Color System:
+- `client/src/lib/colors.ts`: Centralized color mapping system with 30+ color definitions
+- `client/src/components/add-to-cart-button.tsx`: Updated to use unified color system
+- `client/src/components/product-modal.tsx`: Updated to use unified color system
+- **Features**: Case-insensitive matching, fallback colors, hex and Tailwind class support
+
 ### Database Schema Application Process:
 1. Go to Supabase Dashboard > SQL Editor
 2. Run the complete `supabase-schema.sql` file
@@ -356,6 +369,31 @@ Before making any changes, verify:
 
 ## Recent Changes and Fixes
 
+### 2025-01-02: WhatsApp Order Notifications System
+- **Feature**: Added serverless WhatsApp notifications for new orders
+- **Implementation**: 
+  - Created Netlify function `send-whatsapp-notification.js` with Twilio integration
+  - Updated `netlify.toml` with functions path `../netlify/functions`
+  - Modified checkout process to trigger WhatsApp notifications
+  - Added comprehensive error handling and debugging
+- **Requirements**: 5 environment variables needed (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, etc.)
+- **Result**: Owners receive WhatsApp messages with order details automatically
+
+### 2025-01-02: Unified Color System Fix
+- **Issue**: Product color swatches showing grey instead of actual colors
+- **Root Cause**: Two different color mapping systems causing inconsistencies
+- **Solution**: 
+  - Created unified color system in `client/src/lib/colors.ts`
+  - Updated both AddToCartButton and ProductModal components
+  - Added 30+ color mappings including metals, gradients, and special materials
+  - Implemented case-insensitive color matching with fallbacks
+- **Result**: All color swatches now display correct colors consistently
+
+### 2025-01-02: Logo Update
+- **Change**: Updated website logo to custom circular "Trinkets and Things" logo
+- **Implementation**: Modified navigation component to use new logo URL
+- **URL**: `https://i.ibb.co/21pXCY9j/Trinkets-and-Things-Logo-circle.png`
+
 ### 2025-01-02: Netlify Build Fix
 - **Issue**: Build failing due to missing `@tailwindcss/typography`
 - **Solution**: Removed plugin from `tailwind.config.ts`
@@ -365,6 +403,15 @@ Before making any changes, verify:
 - **Issue**: 404 errors on Netlify deployment
 - **Solution**: Created separate client build configuration
 - **Result**: Proper static site deployment
+
+### 2025-01-02: Workspace Cleanup
+- **Action**: Cleaned up development workspace for better organization
+- **Removed Files**: 
+  - Debug scripts: `debug-whatsapp.cjs`, `debug-whatsapp.js`, `test-whatsapp.js`
+  - Outdated docs: `NETLIFY_FUNCTION_FIX.md`, `QUICK_WHATSAPP_SETUP.md`, `DEPLOYMENT.md`
+  - Import files: `BULK_IMPORT_GUIDE.md`, `sample-products.csv`, `imported-products.csv`
+  - Unused assets: `attached_assets/` directory
+- **Result**: Cleaner workspace with only essential files
 
 ## Contact and Support
 
