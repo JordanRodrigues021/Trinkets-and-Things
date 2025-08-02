@@ -15,6 +15,8 @@ This project has been fully configured for Netlify static deployment with Supaba
 - Netlify deployment with specific configuration in `netlify.toml`
 - Environment variables must be prefixed with `VITE_`
 - Build process: `cd client && npm run build`
+- Admin panel fully functional at `/admin` with credentials: jordanrodrigues021@gmail.com / Jordan@trinketsandthings123
+- Database RLS disabled for simplified admin operations (suitable for single-admin setup)
 
 DO NOT modify the deployment configuration without reading the agent guide first.
 
