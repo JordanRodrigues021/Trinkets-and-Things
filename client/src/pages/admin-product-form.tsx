@@ -124,23 +124,39 @@ export default function AdminProductForm() {
       };
 
       if (isEditing && params.id) {
-        const { error } = await supabase
+        console.log('Updating product with data:', productData);
+        const { data: result, error } = await supabase
           .from('products')
           .update(productData)
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
 
-        if (error) throw error;
+        console.log('Update result:', result);
+        console.log('Update error:', error);
+
+        if (error) {
+          console.error('Database update error:', error);
+          throw error;
+        }
 
         toast({
           title: "Product updated",
           description: "Product has been successfully updated",
         });
       } else {
-        const { error } = await supabase
+        console.log('Creating product with data:', productData);
+        const { data: result, error } = await supabase
           .from('products')
-          .insert([productData]);
+          .insert([productData])
+          .select();
 
-        if (error) throw error;
+        console.log('Insert result:', result);
+        console.log('Insert error:', error);
+
+        if (error) {
+          console.error('Database insert error:', error);
+          throw error;
+        }
 
         toast({
           title: "Product created",
@@ -150,9 +166,10 @@ export default function AdminProductForm() {
 
       setLocation('/admin/dashboard');
     } catch (error) {
+      console.error('Full error object:', error);
       toast({
         title: "Error saving product",
-        description: "Failed to save product details",
+        description: `Failed to save product details: ${error.message || error}`,
         variant: "destructive",
       });
     } finally {
