@@ -121,7 +121,6 @@ export default function AdminProductForm() {
         ...data,
         colors,
         images: imageUrls,
-        model_url: null, // Remove 3D model support
       };
 
       if (isEditing && params.id) {
