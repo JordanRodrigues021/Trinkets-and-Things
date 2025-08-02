@@ -2,6 +2,7 @@
   base = "client"
   publish = "dist"
   command = "npm run build"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
@@ -12,3 +13,9 @@
   NODE_VERSION = "18"
   VITE_SUPABASE_URL = "https://qvjxwkttohjhlhvimoqf.supabase.co"
   VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2anh3a3R0b2hqaGxodmltb3FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNzI0MTUsImV4cCI6MjA2OTY0ODQxNX0.WiVKALXqVE71hSzlROGJSYhuYxLOPCKgmDLVn1ryurE"
+  # Twilio WhatsApp credentials (you need to set these in Netlify dashboard)
+  # TWILIO_ACCOUNT_SID = "your_twilio_account_sid"
+  # TWILIO_AUTH_TOKEN = "your_twilio_auth_token"  
+  # TWILIO_WHATSAPP_FROM = "whatsapp:+14155238886"
+  # OWNER_WHATSAPP_NUMBER = "whatsapp:+your_phone_number"
+  # ADMIN_URL = "https://your-site.netlify.app"

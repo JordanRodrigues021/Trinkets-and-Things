@@ -110,6 +110,38 @@ export default function Checkout() {
 
       if (itemsError) throw itemsError;
 
+      // Send WhatsApp notification to owner
+      try {
+        const orderDetails = {
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerPhone: data.customerPhone,
+          total: totalAmount.toFixed(2),
+          items: cart.map(item => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: (item.salePrice || item.price).toFixed(2)
+          })),
+          shippingAddress: data.customerName, // You can enhance this with actual address fields
+          paymentMethod: data.paymentMethod,
+          orderId: order.id
+        };
+
+        await fetch('/.netlify/functions/send-whatsapp-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderDetails })
+        });
+        
+        // Note: We don't throw errors for WhatsApp notification failures
+        // to avoid disrupting the order flow
+      } catch (whatsappError) {
+        console.log('WhatsApp notification failed:', whatsappError);
+        // Continue with order completion even if WhatsApp fails
+      }
+
       // Clear cart and redirect
       clearCart();
 
