@@ -172,8 +172,20 @@ export default function AdminProductForm() {
   };
 
   const addColor = () => {
-    if (newColor.trim() && !colors.includes(newColor.trim())) {
-      setColors([...colors, newColor.trim()]);
+    if (newColor.trim()) {
+      // Check if it's comma-separated colors
+      if (newColor.includes(',')) {
+        const newColors = newColor
+          .split(',')
+          .map(color => color.trim())
+          .filter(color => color && !colors.includes(color));
+        
+        if (newColors.length > 0) {
+          setColors([...colors, ...newColors]);
+        }
+      } else if (!colors.includes(newColor.trim())) {
+        setColors([...colors, newColor.trim()]);
+      }
       setNewColor('');
     }
   };
@@ -366,7 +378,7 @@ export default function AdminProductForm() {
                 <Input
                   value={newColor}
                   onChange={(e) => setNewColor(e.target.value)}
-                  placeholder="Add color (e.g., White, Black, Blue)"
+                  placeholder="Add colors (e.g., White, Black, Blue or White,Black,Blue)"
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
                 />
                 <Button type="button" onClick={addColor} size="sm">

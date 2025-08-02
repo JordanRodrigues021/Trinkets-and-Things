@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -29,6 +29,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [importing, setImporting] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // Check authentication
   useEffect(() => {
@@ -311,6 +312,164 @@ export default function AdminDashboard() {
       toast({
         title: "Error updating color",
         description: "Failed to update color availability",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const duplicateProduct = async (productId: string) => {
+    try {
+      const originalProduct = products.find(p => p.id === productId);
+      if (!originalProduct) return;
+
+      const { id, created_at, ...productData } = originalProduct;
+      const duplicatedProduct = {
+        ...productData,
+        name: `${originalProduct.name} (Copy)`,
+      };
+
+      const { data, error } = await supabase
+        .from('products')
+        .insert([duplicatedProduct])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setProducts([data, ...products]);
+      toast({
+        title: "Product duplicated",
+        description: `${originalProduct.name} has been duplicated`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error duplicating product",
+        description: "Failed to duplicate product",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.length === filteredProducts.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(filteredProducts.map(p => p.id));
+    }
+  };
+
+  const toggleSelectProduct = (productId: string) => {
+    setSelectedProducts(prev => 
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
+  const batchDeleteProducts = async () => {
+    if (selectedProducts.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedProducts.length} products?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .in('id', selectedProducts);
+
+      if (error) throw error;
+
+      setProducts(products.filter(p => !selectedProducts.includes(p.id)));
+      setSelectedProducts([]);
+      toast({
+        title: "Products deleted",
+        description: `${selectedProducts.length} products have been deleted`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting products",
+        description: "Failed to delete selected products",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const batchDisableColor = async (color: string) => {
+    if (selectedProducts.length === 0) return;
+
+    try {
+      const updates = selectedProducts.map(async (productId) => {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        const currentDisabled = product.disabled_colors || [];
+        if (currentDisabled.includes(color)) return; // Already disabled
+
+        const newDisabled = [...currentDisabled, color];
+        return supabase
+          .from('products')
+          .update({ disabled_colors: newDisabled })
+          .eq('id', productId);
+      });
+
+      await Promise.all(updates);
+
+      // Update local state
+      setProducts(products.map(p => 
+        selectedProducts.includes(p.id)
+          ? { ...p, disabled_colors: [...(p.disabled_colors || []), color].filter((c, i, arr) => arr.indexOf(c) === i) }
+          : p
+      ));
+
+      setSelectedProducts([]);
+      toast({
+        title: "Color disabled",
+        description: `${color} has been disabled for ${selectedProducts.length} products`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error disabling color",
+        description: "Failed to disable color for selected products",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const batchEnableColor = async (color: string) => {
+    if (selectedProducts.length === 0) return;
+
+    try {
+      const updates = selectedProducts.map(async (productId) => {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        const currentDisabled = product.disabled_colors || [];
+        const newDisabled = currentDisabled.filter(c => c !== color);
+        
+        return supabase
+          .from('products')
+          .update({ disabled_colors: newDisabled })
+          .eq('id', productId);
+      });
+
+      await Promise.all(updates);
+
+      // Update local state
+      setProducts(products.map(p => 
+        selectedProducts.includes(p.id)
+          ? { ...p, disabled_colors: (p.disabled_colors || []).filter(c => c !== color) }
+          : p
+      ));
+
+      setSelectedProducts([]);
+      toast({
+        title: "Color enabled",
+        description: `${color} has been enabled for ${selectedProducts.length} products`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error enabling color",
+        description: "Failed to enable color for selected products",
         variant: "destructive",
       });
     }
@@ -659,13 +818,98 @@ export default function AdminDashboard() {
           )}
         </div>
 
+        {/* Batch Actions */}
+        {activeTab === 'products' && selectedProducts.length > 0 && (
+          <Card className="mb-4">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-medium">{selectedProducts.length} products selected</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedProducts([])}
+                  >
+                    Clear Selection
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={batchDeleteProducts}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Selected
+                  </Button>
+                  <div className="flex gap-1">
+                    {['Black', 'White', 'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple'].map(color => (
+                      <div key={color} className="flex">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs px-2"
+                          onClick={() => batchDisableColor(color)}
+                        >
+                          <X className="w-3 h-3 mr-1" />
+                          {color}
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="text-xs px-2 ml-1"
+                          onClick={() => batchEnableColor(color)}
+                        >
+                          <Check className="w-3 h-3 mr-1" />
+                          {color}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Content */}
         {activeTab === 'products' && (
           <div className="space-y-4">
+            {activeTab === 'products' && filteredProducts.length > 0 && (
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                >
+                  {selectedProducts.length === filteredProducts.length ? (
+                    <CheckSquare className="w-4 h-4 mr-2" />
+                  ) : (
+                    <Square className="w-4 h-4 mr-2" />
+                  )}
+                  {selectedProducts.length === filteredProducts.length ? 'Deselect All' : 'Select All'}
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {selectedProducts.length} of {filteredProducts.length} selected
+                </span>
+              </div>
+            )}
             {filteredProducts.map((product) => (
               <Card key={product.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-2"
+                      onClick={() => toggleSelectProduct(product.id)}
+                    >
+                      {selectedProducts.includes(product.id) ? (
+                        <CheckSquare className="w-4 h-4" />
+                      ) : (
+                        <Square className="w-4 h-4" />
+                      )}
+                    </Button>
                     <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                       {product.images.length > 0 ? (
                         <img
@@ -730,6 +974,13 @@ export default function AdminDashboard() {
                         </div>
                         
                         <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => duplicateProduct(product.id)}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
