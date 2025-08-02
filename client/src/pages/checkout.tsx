@@ -112,6 +112,7 @@ export default function Checkout() {
 
       // Send WhatsApp notification to owner
       try {
+        console.log('🔔 Preparing WhatsApp notification...');
         const orderDetails = {
           customerName: data.customerName,
           customerEmail: data.customerEmail,
@@ -127,18 +128,52 @@ export default function Checkout() {
           orderId: order.id
         };
 
-        await fetch('/.netlify/functions/send-whatsapp-notification', {
+        console.log('📱 Sending WhatsApp notification for order:', order.id);
+        console.log('Order details:', orderDetails);
+
+        const whatsappResponse = await fetch('/.netlify/functions/send-whatsapp-notification', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ orderDetails })
         });
+
+        console.log('WhatsApp response status:', whatsappResponse.status);
+        const whatsappResult = await whatsappResponse.json();
+        console.log('WhatsApp response data:', whatsappResult);
+
+        if (whatsappResponse.ok) {
+          console.log('✅ WhatsApp notification sent successfully!');
+          toast({
+            title: "WhatsApp notification sent!",
+            description: "You'll receive an order notification on WhatsApp shortly.",
+            duration: 3000,
+          });
+        } else {
+          console.error('❌ WhatsApp notification failed:', whatsappResult);
+          if (whatsappResult.missing && whatsappResult.missing.length > 0) {
+            console.warn('⚠️ WhatsApp setup incomplete. Missing environment variables:', whatsappResult.missing);
+            toast({
+              title: "WhatsApp setup needed",
+              description: "Order created successfully, but WhatsApp notifications need setup. Check the console for details.",
+              variant: "destructive",
+              duration: 5000,
+            });
+          } else {
+            toast({
+              title: "WhatsApp notification issue",
+              description: whatsappResult.error || "WhatsApp notification failed, but order was created successfully.",
+              variant: "destructive",
+              duration: 5000,
+            });
+          }
+        }
         
         // Note: We don't throw errors for WhatsApp notification failures
         // to avoid disrupting the order flow
       } catch (whatsappError) {
-        console.log('WhatsApp notification failed:', whatsappError);
+        console.error('🚨 WhatsApp notification error:', whatsappError);
         // Continue with order completion even if WhatsApp fails
       }
 
