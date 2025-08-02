@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertContactSchema } from "@shared/schema";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,15 +10,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
-import type { z } from "zod";
+import { z } from "zod";
 
-type ContactFormData = z.infer<typeof insertContactSchema>;
+const contactSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  subject: z.string().min(1, "Subject is required"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactSection() {
   const { toast } = useToast();
   
   const form = useForm<ContactFormData>({
-    resolver: zodResolver(insertContactSchema),
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -33,16 +41,35 @@ export default function ContactSection() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     
-    // Simulate a brief delay for form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Message sent successfully!",
-      description: "We'll get back to you as soon as possible.",
-    });
-    
-    form.reset();
-    setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          subject: data.subject,
+          message: data.message,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you as soon as possible.",
+      });
+      
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Failed to send message",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+      console.error('Contact form error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
