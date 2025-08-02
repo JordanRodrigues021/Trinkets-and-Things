@@ -1,6 +1,6 @@
 # Overview
 
-This is a 3D printing showcase and e-commerce website built with a modern full-stack architecture. The application displays 3D printed products across different categories (functional items, artistic pieces, and prototypes), allows users to browse and search products, and includes a contact form for inquiries. The site features a responsive design with smooth scrolling navigation, product filtering, and detailed product views through modals.
+This is a static 3D printing showcase website built with React and Vite for deployment on Netlify. The application displays 3D printed products across different categories (functional items, artistic pieces, and prototypes), allows users to browse and search products, and includes a contact form for inquiries. The site features a responsive design with smooth scrolling navigation, product filtering, and detailed product views through modals. All data is stored statically in the client-side code, making it completely serverless.
 
 # User Preferences
 
@@ -13,20 +13,15 @@ Preferred communication style: Simple, everyday language.
 - **Vite Build System**: Fast development server and optimized production builds with HMR support
 - **Wouter Router**: Lightweight client-side routing for single-page application navigation
 - **shadcn/ui Components**: Pre-built, accessible UI components based on Radix UI primitives with Tailwind CSS styling
-- **TanStack Query**: Server state management for API calls with caching, background updates, and error handling
+- **Local State Management**: Direct data access from static files using React hooks
 - **React Hook Form**: Form state management with Zod schema validation for type-safe form handling
 
-## Backend Architecture
-- **Express.js Server**: RESTful API server with middleware for JSON parsing, logging, and error handling
-- **TypeScript**: Full-stack type safety with shared schemas between client and server
-- **In-Memory Storage**: Development storage implementation with plans for database migration
-- **API Routes**: RESTful endpoints for products (`/api/products`) and contact forms (`/api/contact`)
-
-## Data Storage
-- **Drizzle ORM**: Type-safe PostgreSQL ORM with schema definitions and migrations
-- **PostgreSQL**: Production database configured for Neon serverless hosting
-- **Shared Schema**: Common TypeScript types and Zod validation schemas used across client and server
-- **Database Structure**: Products table with categories, images, materials, and pricing; Contacts table for form submissions
+## Data Architecture
+- **Static Data**: Product data stored in TypeScript files within the client application
+- **No Backend Required**: Fully client-side application without server dependencies
+- **Client-Side Storage**: All product information hardcoded in `/client/src/data/products.ts`
+- **Form Handling**: Contact forms show success messages without actual data submission
+- **Shared Schema**: Common TypeScript types and Zod validation schemas for type safety
 
 ## Styling and UI
 - **Tailwind CSS**: Utility-first CSS framework with custom design system
@@ -59,10 +54,11 @@ Preferred communication style: Simple, everyday language.
 - **Utilities**: clsx and class-variance-authority for conditional styling
 - **Carousel**: Embla Carousel for image galleries
 
-## State Management and API
-- **Server State**: TanStack React Query for API state management and caching
+## State Management
+- **Local State**: React useState and useMemo for component state management
 - **Form Management**: React Hook Form with Hookform Resolvers for validation integration
 - **Validation**: Zod for runtime type validation and schema definition
+- **Static Data Access**: Direct imports from data files without API calls
 
 ## Development Tools
 - **Replit Integration**: Vite plugins for Replit development environment and error handling
