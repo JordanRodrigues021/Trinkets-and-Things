@@ -57,3 +57,10 @@ This project is configured for static deployment on Netlify with Supabase as the
 - **404 Errors**: Ensure `netlify.toml` redirect rules are in place
 - **Database Errors**: Verify Supabase environment variables are correct
 - **Build Failures**: Check that all dependencies are installed in `client/package.json`
+- **Tailwind Plugin Errors**: Only `tailwindcss-animate` is required - other plugins removed for compatibility
+
+### Recent Fixes
+
+- Removed `@tailwindcss/typography` plugin dependency that was causing Netlify build failures
+- Updated client package.json to include only necessary dependencies
+- Verified build works with simplified Tailwind configuration
