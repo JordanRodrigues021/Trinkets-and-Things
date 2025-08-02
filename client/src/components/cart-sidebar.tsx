@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/contexts/cart-context';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import PriceDisplay from './price-display';
 

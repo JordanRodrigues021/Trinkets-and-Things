@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/contexts/cart-context';
 import { ShoppingCart, Palette } from 'lucide-react';
 import type { Database } from '@/types/database';
 

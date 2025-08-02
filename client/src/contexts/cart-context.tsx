@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface CartItem {
   productId: string;
@@ -10,7 +10,23 @@ export interface CartItem {
   image: string;
 }
 
-export function useCart() {
+interface CartContextType {
+  cart: CartItem[];
+  addItem: (item: Omit<CartItem, 'quantity'>) => void;
+  removeItem: (productId: string, selectedColor: string) => void;
+  updateQuantity: (productId: string, selectedColor: string, quantity: number) => void;
+  clearCart: () => void;
+  getTotalItems: () => number;
+  getTotalPrice: () => number;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+interface CartProviderProps {
+  children: ReactNode;
+}
+
+export function CartProvider({ children }: CartProviderProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   // Load cart from localStorage on mount
@@ -18,7 +34,8 @@ export function useCart() {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
-        setCart(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        setCart(parsedCart);
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
         localStorage.removeItem('cart');
@@ -89,13 +106,25 @@ export function useCart() {
     }, 0);
   };
 
-  return {
-    cart,
-    addItem,
-    removeItem,
-    updateQuantity,
-    clearCart,
-    getTotalItems,
-    getTotalPrice,
-  };
+  return (
+    <CartContext.Provider value={{
+      cart,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      getTotalItems,
+      getTotalPrice,
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export function useCart() {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 }

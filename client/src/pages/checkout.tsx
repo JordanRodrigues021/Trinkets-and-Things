@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/contexts/cart-context';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft, CreditCard, Truck, QrCode } from 'lucide-react';
 import PriceDisplay from '@/components/price-display';
