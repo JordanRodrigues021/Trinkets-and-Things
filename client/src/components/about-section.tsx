@@ -52,16 +52,8 @@ export default function AboutSection() {
               alt="3D printing workspace" 
               className="rounded-xl shadow-lg col-span-2"
             />
-            <img 
-              src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
-              alt="3D printer in action" 
-              className="rounded-xl shadow-lg"
-            />
-            <img 
-              src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
-              alt="Finished product showcase" 
-              className="rounded-xl shadow-lg"
-            />
+            
+            
           </div>
         </div>
       </div>

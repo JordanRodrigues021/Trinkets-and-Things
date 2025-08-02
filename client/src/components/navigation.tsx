@@ -33,10 +33,12 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                <img 
+                  src="https://i.ibb.co/21pXCY9j/Trinkets-and-Things-Logo-circle.png" 
+                  alt="Trinkets and Things Logo" 
+                  className="w-8 h-8 rounded-lg"
+                />
               </div>
               <h1 className="text-xl md:text-2xl font-bold text-secondary hidden sm:block">Trinkets and Things</h1>
             </div>
