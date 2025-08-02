@@ -32,14 +32,7 @@ export default function HeroSection() {
             >
               Explore Products
             </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={() => scrollToSection('about')}
-              className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg font-semibold"
-            >
-              Learn More
-            </Button>
+            
           </div>
         </div>
       </div>
