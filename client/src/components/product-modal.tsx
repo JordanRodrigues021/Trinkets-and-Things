@@ -5,11 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Mail, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Product3DViewer from "@/components/product-3d-viewer";
+import type { Database } from "@/types/database";
+
+type Product = Database['public']['Tables']['products']['Row'];
 
 export default function ProductModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState("");
   const { toast } = useToast();
 
@@ -17,7 +19,6 @@ export default function ProductModal() {
     const handleOpenModal = (event: CustomEvent) => {
       const product = event.detail as Product;
       setSelectedProduct(product);
-      setSelectedImage(0);
       setSelectedColor(product.colors[0] || "");
       setIsOpen(true);
     };
@@ -87,7 +88,6 @@ Thank you!`;
                 id: selectedProduct.id,
                 name: selectedProduct.name,
                 images: selectedProduct.images || [],
-                modelUrl: selectedProduct.modelUrl,
                 category: selectedProduct.category,
                 material: selectedProduct.material,
                 dimensions: selectedProduct.dimensions
@@ -115,14 +115,14 @@ Thank you!`;
                 <li><strong>Material:</strong> {selectedProduct.material}</li>
                 <li><strong>Dimensions:</strong> {selectedProduct.dimensions}</li>
                 <li><strong>Weight:</strong> {selectedProduct.weight}</li>
-                <li><strong>Print Time:</strong> {selectedProduct.printTime}</li>
+                <li><strong>Print Time:</strong> {selectedProduct.print_time}</li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold text-secondary mb-3">Available Colors</h4>
               <div className="flex flex-wrap gap-3">
-                {selectedProduct.colors.map((color) => (
+                {selectedProduct.colors.map((color: string) => (
                   <button
                     key={color}
                     className={`w-8 h-8 rounded-full border-2 hover:border-primary transition-colors ${

@@ -56,3 +56,13 @@ CREATE POLICY "Products are viewable by everyone" ON products
 -- Create policies for contacts (insert-only for public)
 CREATE POLICY "Anyone can insert contacts" ON contacts
   FOR INSERT WITH CHECK (true);
+
+-- Admin policies for full access to products
+CREATE POLICY "Admin can do everything on products" ON products
+  FOR ALL USING (true)
+  WITH CHECK (true);
+
+-- Admin policies for full access to contacts  
+CREATE POLICY "Admin can do everything on contacts" ON contacts
+  FOR ALL USING (true)
+  WITH CHECK (true);
