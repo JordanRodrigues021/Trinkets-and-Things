@@ -6,6 +6,18 @@ This is a static 3D printing showcase website built with React and Vite for depl
 
 Preferred communication style: Simple, everyday language.
 
+# Important Notes for Future Agents
+
+This project has been fully configured for Netlify static deployment with Supabase integration. See `NETLIFY_AGENT_GUIDE.md` for comprehensive deployment instructions and architectural decisions. Key points:
+
+- Static React frontend only (no server in production)
+- Supabase for database with direct client connections
+- Netlify deployment with specific configuration in `netlify.toml`
+- Environment variables must be prefixed with `VITE_`
+- Build process: `cd client && npm run build`
+
+DO NOT modify the deployment configuration without reading the agent guide first.
+
 # System Architecture
 
 ## Frontend Architecture
@@ -39,13 +51,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Core Framework Dependencies
 - **React Ecosystem**: React 18, React DOM, React Hook Form for UI and form management
-- **Build Tools**: Vite for frontend bundling, esbuild for server bundling, TypeScript compiler
+- **Build Tools**: Vite for frontend bundling (static build only), TypeScript compiler
 - **Routing**: Wouter for lightweight client-side routing
 
-## Database and ORM
-- **Database**: Neon PostgreSQL serverless database for production
-- **ORM**: Drizzle ORM with PostgreSQL dialect and migration support
-- **Connection**: @neondatabase/serverless for optimized serverless connections
+## Database and Backend
+- **Database**: Supabase PostgreSQL for production (serverless)
+- **Connection**: @supabase/supabase-js for direct client connections
+- **Deployment**: Netlify static hosting with environment variable configuration
 
 ## UI and Styling
 - **Component Library**: Radix UI primitives for accessible, unstyled components
