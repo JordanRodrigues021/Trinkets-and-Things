@@ -179,6 +179,38 @@ export interface Database {
           updated_at?: string;
         };
       };
+      reviews: {
+        Row: {
+          id: string;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          review_text: string;
+          profile_picture_url: string | null;
+          is_approved: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          review_text: string;
+          profile_picture_url?: string | null;
+          is_approved?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          customer_name?: string;
+          customer_email?: string;
+          rating?: number;
+          review_text?: string;
+          profile_picture_url?: string | null;
+          is_approved?: boolean;
+          created_at?: string;
+        };
+      };
     };
   };
 }

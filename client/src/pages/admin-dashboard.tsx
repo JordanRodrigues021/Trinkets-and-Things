@@ -14,16 +14,18 @@ type Contact = Database['public']['Tables']['contacts']['Row'];
 type Order = Database['public']['Tables']['orders']['Row'];
 type OrderItem = Database['public']['Tables']['order_items']['Row'];
 type SiteSetting = Database['public']['Tables']['site_settings']['Row'];
+type Review = Database['public']['Tables']['reviews']['Row'];
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'contacts' | 'settings'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'contacts' | 'reviews' | 'settings'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [settings, setSettings] = useState<SiteSetting[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [importing, setImporting] = useState(false);
@@ -43,6 +45,7 @@ export default function AdminDashboard() {
     loadProducts();
     loadContacts();
     loadSettings();
+    loadReviews();
   }, []);
 
   const loadProducts = async () => {
@@ -80,6 +83,72 @@ export default function AdminDashboard() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReviews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setReviews(data || []);
+    } catch (error) {
+      toast({
+        title: "Error loading reviews",
+        description: "Failed to fetch reviews from database",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const approveReview = async (reviewId: string) => {
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .update({ is_approved: true })
+        .eq('id', reviewId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Review approved",
+        description: "Review has been approved and will appear on the website",
+      });
+
+      loadReviews(); // Refresh reviews
+    } catch (error) {
+      toast({
+        title: "Error approving review",
+        description: "Failed to approve review",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteReview = async (reviewId: string) => {
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', reviewId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Review deleted",
+        description: "Review has been deleted successfully",
+      });
+
+      loadReviews(); // Refresh reviews
+    } catch (error) {
+      toast({
+        title: "Error deleting review",
+        description: "Failed to delete review",
+        variant: "destructive",
+      });
     }
   };
 
@@ -362,6 +431,12 @@ export default function AdminDashboard() {
     contact.subject.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredReviews = reviews.filter(review =>
+    review.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    review.customer_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    review.review_text.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -459,6 +534,14 @@ export default function AdminDashboard() {
             >
               <Users className="w-4 h-4 mr-2" />
               Contacts ({contacts.length})
+            </Button>
+            <Button
+              variant={activeTab === 'reviews' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('reviews')}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Reviews ({reviews.length})
             </Button>
             <Button
               variant={activeTab === 'settings' ? 'default' : 'ghost'}
@@ -661,6 +744,82 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-semibold mb-2">No contacts found</h3>
                   <p className="text-muted-foreground">
                     {searchTerm ? 'Try adjusting your search criteria' : 'No customer inquiries yet'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <div className="space-y-4">
+            {filteredReviews.map((review) => (
+              <Card key={review.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold">{review.customer_name}</h3>
+                        <Badge variant="outline">{review.customer_email}</Badge>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < review.rating
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                              }`}
+                            >
+                              ⭐
+                            </div>
+                          ))}
+                        </div>
+                        <Badge
+                          variant={review.is_approved ? 'default' : 'secondary'}
+                        >
+                          {review.is_approved ? 'Approved' : 'Pending'}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
+                        "{review.review_text}"
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Submitted {new Date(review.created_at).toLocaleDateString()} at{' '}
+                        {new Date(review.created_at).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    
+                    <div className="flex gap-2 ml-4">
+                      {!review.is_approved && (
+                        <Button
+                          size="sm"
+                          onClick={() => approveReview(review.id)}
+                        >
+                          <Check className="w-4 h-4 mr-2" />
+                          Approve
+                        </Button>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteReview(review.id)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            
+            {filteredReviews.length === 0 && (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Eye className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">No reviews found</h3>
+                  <p className="text-muted-foreground">
+                    {searchTerm ? 'Try adjusting your search criteria' : 'No customer reviews yet'}
                   </p>
                 </CardContent>
               </Card>

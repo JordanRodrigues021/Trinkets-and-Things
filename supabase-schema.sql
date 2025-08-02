@@ -89,6 +89,25 @@ INSERT INTO site_settings (setting_key, setting_value) VALUES
 ('currency_symbol', '₹'),
 ('order_confirmation_hours', '24');
 
+-- Create reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  customer_email TEXT NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  review_text TEXT NOT NULL,
+  profile_picture_url TEXT, -- Optional profile picture
+  is_approved BOOLEAN DEFAULT FALSE, -- Admin approval required
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert sample approved reviews
+INSERT INTO reviews (customer_name, customer_email, rating, review_text, profile_picture_url, is_approved) VALUES
+('Arjun Sharma', 'arjun@example.com', 5, 'Amazing quality! The geometric vase I ordered exceeded my expectations. The detail and finish are incredible.', NULL, TRUE),
+('Priya Patel', 'priya@example.com', 5, 'Love my custom phone stand! Perfect for video calls and the design is so sleek. Will definitely order again.', NULL, TRUE),
+('Rahul Kumar', 'rahul@example.com', 4, 'Great work on the desk organizer. Really helps keep my workspace tidy. Fast delivery too!', NULL, TRUE),
+('Sneha Gupta', 'sneha@example.com', 5, 'The architectural model was exactly what we needed for our presentation. Highly professional quality.', NULL, TRUE);
+
 -- Disable Row Level Security for simplified admin functionality
 -- (In production, you would want proper RLS with authentication)
 ALTER TABLE products DISABLE ROW LEVEL SECURITY;
@@ -96,3 +115,4 @@ ALTER TABLE contacts DISABLE ROW LEVEL SECURITY;
 ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items DISABLE ROW LEVEL SECURITY;
 ALTER TABLE site_settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews DISABLE ROW LEVEL SECURITY;

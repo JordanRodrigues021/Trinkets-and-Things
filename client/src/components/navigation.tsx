@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X, ShoppingCart } from "lucide-react";
+import { Search, Menu, X, ShoppingCart, MessageSquare, Package } from "lucide-react";
 import CartSidebar from './cart-sidebar';
+import ReviewForm from './review-form';
+import OrderTracking from './order-tracking';
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -47,6 +49,12 @@ export default function Navigation() {
               Products
             </button>
             <button 
+              onClick={() => scrollToSection('reviews')}
+              className="text-gray-700 hover:text-primary transition-colors duration-300"
+            >
+              Reviews
+            </button>
+            <button 
               onClick={() => scrollToSection('about')}
               className="text-gray-700 hover:text-primary transition-colors duration-300"
             >
@@ -71,6 +79,16 @@ export default function Navigation() {
               />
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             </form>
+            <OrderTracking>
+              <Button variant="ghost" size="icon" title="Track Order">
+                <Package className="h-5 w-5" />
+              </Button>
+            </OrderTracking>
+            <ReviewForm>
+              <Button variant="ghost" size="icon" title="Leave Review">
+                <MessageSquare className="h-5 w-5" />
+              </Button>
+            </ReviewForm>
             <CartSidebar>
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
@@ -102,6 +120,12 @@ export default function Navigation() {
                 className="text-left text-gray-700 hover:text-primary transition-colors duration-300"
               >
                 Products
+              </button>
+              <button 
+                onClick={() => scrollToSection('reviews')}
+                className="text-left text-gray-700 hover:text-primary transition-colors duration-300"
+              >
+                Reviews
               </button>
               <button 
                 onClick={() => scrollToSection('about')}
