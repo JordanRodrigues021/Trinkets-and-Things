@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/cart-context';
 import { ShoppingCart, Palette } from 'lucide-react';
+import { getColorHex } from '@/lib/colors';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -88,17 +89,7 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
                   <div 
                     className="w-4 h-4 rounded-full border border-gray-300"
                     style={{
-                      backgroundColor: color.toLowerCase() === 'white' ? '#ffffff' :
-                                     color.toLowerCase() === 'black' ? '#000000' :
-                                     color.toLowerCase() === 'red' ? '#ef4444' :
-                                     color.toLowerCase() === 'blue' ? '#3b82f6' :
-                                     color.toLowerCase() === 'green' ? '#22c55e' :
-                                     color.toLowerCase() === 'yellow' ? '#eab308' :
-                                     color.toLowerCase() === 'gray' || color.toLowerCase() === 'grey' ? '#6b7280' :
-                                     color.toLowerCase() === 'silver' ? '#c0c0c0' :
-                                     color.toLowerCase() === 'gold' ? '#ffd700' :
-                                     color.toLowerCase() === 'translucent' ? 'rgba(255,255,255,0.5)' :
-                                     '#94a3b8'
+                      backgroundColor: getColorHex(color)
                     }}
                   />
                   {color}

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import Product3DViewer from "@/components/product-3d-viewer";
 import AddToCartButton from "@/components/add-to-cart-button";
 import PriceDisplay from "@/components/price-display";
+import { getColorClasses } from "@/lib/colors";
 import type { Database } from "@/types/database";
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -41,19 +42,7 @@ export default function ProductModal() {
     });
   };
 
-  const colorMap: Record<string, string> = {
-    'White': 'bg-white border-gray-300',
-    'Black': 'bg-black border-gray-600',
-    'Blue': 'bg-blue-500 border-blue-600',
-    'Red': 'bg-red-500 border-red-600',
-    'Green': 'bg-green-500 border-green-600',
-    'Gray': 'bg-gray-500 border-gray-600',
-    'Gold': 'bg-yellow-400 border-yellow-500',
-    'Silver': 'bg-gray-300 border-gray-400',
-    'Natural': 'bg-amber-100 border-amber-200',
-    'Painted': 'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 border-gray-400',
-    'Translucent': 'bg-blue-100 border-blue-200 opacity-75',
-  };
+  // Using unified color system from lib/colors.ts
 
   if (!selectedProduct) {
     return null;
@@ -120,7 +109,7 @@ export default function ProductModal() {
                   <button
                     key={color}
                     className={`w-8 h-8 rounded-full border-2 hover:border-primary transition-colors ${
-                      colorMap[color] || 'bg-gray-200 border-gray-300'
+                      getColorClasses(color)
                     } ${selectedColor === color ? 'ring-2 ring-primary ring-offset-2' : ''}`}
                     onClick={() => setSelectedColor(color)}
                     title={color}
