@@ -1,6 +1,6 @@
 # Overview
 
-This is a static 3D printing showcase website built with React and Vite for deployment on Netlify. The application displays 3D printed products across different categories (functional items, artistic pieces, and prototypes), allows users to browse and search products, and includes a contact form for inquiries. The site features a responsive design with smooth scrolling navigation, product filtering, and detailed product views through modals. All data is stored statically in the client-side code, making it completely serverless.
+This is a static 3D printing showcase website built with React and Vite for deployment on Netlify. The application displays 3D printed products across different categories (functional items, artistic pieces, and prototypes), allows users to browse and search products, and includes a contact form for inquiries. The site features a responsive design with smooth scrolling navigation, product filtering, and detailed product views through modals. Data is stored in Supabase database while maintaining static deployment compatibility with Netlify.
 
 # User Preferences
 
@@ -17,11 +17,11 @@ Preferred communication style: Simple, everyday language.
 - **React Hook Form**: Form state management with Zod schema validation for type-safe form handling
 
 ## Data Architecture
-- **Static Data**: Product data stored in TypeScript files within the client application
-- **No Backend Required**: Fully client-side application without server dependencies
-- **Client-Side Storage**: All product information hardcoded in `/client/src/data/products.ts`
-- **Form Handling**: Contact forms show success messages without actual data submission
-- **Shared Schema**: Common TypeScript types and Zod validation schemas for type safety
+- **Supabase Database**: Product and contact data stored in PostgreSQL database via Supabase
+- **Static Client Build**: Frontend compiled to static files for Netlify deployment
+- **Serverless Architecture**: No server required - direct Supabase client connections
+- **Form Handling**: Contact forms save data to Supabase contacts table
+- **Database Schema**: PostgreSQL tables with Row Level Security policies for public access
 
 ## Styling and UI
 - **Tailwind CSS**: Utility-first CSS framework with custom design system
