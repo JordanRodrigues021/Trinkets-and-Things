@@ -1,6 +1,5 @@
 import Navigation from "@/components/navigation";
 import HeroSection from "@/components/hero-section";
-import ProductCategories from "@/components/product-categories";
 import ProductGallery from "@/components/product-gallery";
 import AboutSection from "@/components/about-section";
 import ContactSection from "@/components/contact-section";
@@ -14,17 +13,16 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navigation />
       <HeroSection />
-      <ProductCategories />
       <ProductGallery />
       
       {/* Customer Reviews Section */}
-      <section id="reviews" className="py-16 bg-white dark:bg-gray-800">
+      <section id="reviews" className="py-8 sm:py-16 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               What Our Customers Say
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base">
               Real feedback from satisfied customers who love our 3D printed products.
             </p>
           </div>
@@ -33,7 +31,7 @@ export default function Home() {
       </section>
 
       {/* Instagram Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+      <section className="py-8 sm:py-16 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <InstagramSection />
         </div>

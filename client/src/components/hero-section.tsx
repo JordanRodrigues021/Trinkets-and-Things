@@ -9,7 +9,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative gradient-hero text-white py-20 lg:py-32">
+    <section id="home" className="relative gradient-hero text-white py-16 sm:py-20 lg:py-32">
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20"
         style={{
@@ -18,17 +18,17 @@ export default function HeroSection() {
       />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6">
             Bringing Ideas to <span className="text-accent">Life</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto px-4">
             Discover our collection of premium 3D printed products, from functional prototypes to artistic masterpieces
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
               onClick={() => scrollToSection('products')}
-              className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold"
+              className="bg-primary hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold"
             >
               Explore Products
             </Button>

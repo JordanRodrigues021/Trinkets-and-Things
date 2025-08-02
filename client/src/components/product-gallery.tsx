@@ -24,21 +24,15 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
     search: searchQuery || undefined,
   });
 
-  // Listen for category filter events from ProductCategories
+  // Listen for search events from navigation
   useEffect(() => {
-    const handleCategoryFilter = (event: CustomEvent) => {
-      setSelectedCategory(event.detail);
-    };
-
     const handleSearch = (event: CustomEvent) => {
       setSearchQuery(event.detail);
     };
 
-    window.addEventListener('filterCategory', handleCategoryFilter as EventListener);
     window.addEventListener('search', handleSearch as EventListener);
 
     return () => {
-      window.removeEventListener('filterCategory', handleCategoryFilter as EventListener);
       window.removeEventListener('search', handleSearch as EventListener);
     };
   }, []);
@@ -90,7 +84,7 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
     return (
       <section id="products" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
                 <div className="w-full h-64 bg-gray-300"></div>
@@ -111,41 +105,48 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
   }
 
   return (
-    <section id="products" className="py-16 bg-gray-50">
+    <section id="products" className="py-8 sm:py-16 bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">Featured Products</h2>
-            <p className="text-lg text-gray-600">Discover our latest creations and bestselling items</p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mt-6 lg:mt-0">
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="functional">Functional Items</SelectItem>
-                <SelectItem value="artistic">Artistic Pieces</SelectItem>
-                <SelectItem value="prototypes">Prototypes</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Sort by: Latest" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="latest">Sort by: Latest</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="popular">Most Popular</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Our Products
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base">
+            Discover our collection of premium 3D printed products, each crafted with precision and attention to detail.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* Filters and Sort */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="functional">Functional</SelectItem>
+              <SelectItem value="artistic">Artistic</SelectItem>
+              <SelectItem value="prototypes">Prototypes</SelectItem>
+              <SelectItem value="miniatures">Miniatures</SelectItem>
+              <SelectItem value="jewelry">Jewelry</SelectItem>
+              <SelectItem value="home-decor">Home Decor</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="latest">Latest</SelectItem>
+              <SelectItem value="popular">Most Popular</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {sortedProducts.map((product) => (
             <div 
               key={product.id}
@@ -170,9 +171,9 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
+                  <h3 className="font-semibold text-base sm:text-lg text-gray-900">{product.name}</h3>
                   {getBadgeText(product.featured) && (
                     <Badge variant={getBadgeVariant(product.featured)}>
                       {getBadgeText(product.featured)}

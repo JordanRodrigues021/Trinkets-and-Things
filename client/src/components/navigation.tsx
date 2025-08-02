@@ -28,11 +28,18 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-secondary">3D Creations Studio</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h1 className="text-xl md:text-2xl font-bold text-secondary hidden sm:block">Trinkets and Things</h1>
+            </div>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">

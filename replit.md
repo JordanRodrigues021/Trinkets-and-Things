@@ -17,6 +17,9 @@ This project has been fully configured for Netlify static deployment with Supaba
 - Build process: `cd client && npm run build`
 - Admin panel fully functional at `/admin` with credentials: jordanrodrigues021@gmail.com / Jordan@trinketsandthings123
 - Database RLS disabled for simplified admin operations (suitable for single-admin setup)
+- **Mobile Optimization Complete**: All components are fully responsive with mobile-first design
+- **Brand Update**: Logo integrated with "Trinkets and Things" branding (logo + text on desktop, logo only on mobile)
+- **Product Categories Section**: Removed per user request - products now displayed directly in gallery
 
 DO NOT modify the deployment configuration without reading the agent guide first.
 
