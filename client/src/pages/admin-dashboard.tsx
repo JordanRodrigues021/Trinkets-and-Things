@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [importing, setImporting] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -106,6 +107,146 @@ export default function AdminDashboard() {
         description: "Failed to delete product",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleExportProducts = () => {
+    const csvHeaders = 'name,description,price,category,material,dimensions,weight,print_time,colors,images,featured\n';
+    const csvData = products.map(product => {
+      const colors = product.colors.join(';');
+      const images = product.images.join(';');
+      return `"${product.name}","${product.description}",${product.price},${product.category},"${product.material}","${product.dimensions}","${product.weight}","${product.print_time}","${colors}","${images}",${product.featured}`;
+    }).join('\n');
+
+    const blob = new Blob([csvHeaders + csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `products-export-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export successful",
+      description: `Exported ${products.length} products to CSV`,
+    });
+  };
+
+  const handleImportProducts = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a CSV file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setImporting(true);
+
+    try {
+      const text = await file.text();
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+      
+      const products: any[] = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Parse CSV line with proper handling of quoted values
+        const values: string[] = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        values.push(current.trim());
+
+        if (values.length !== headers.length) continue;
+
+        const product: any = {};
+        headers.forEach((header, index) => {
+          const value = values[index]?.replace(/"/g, '') || '';
+          switch (header.trim()) {
+            case 'name':
+            case 'description':
+            case 'category':
+            case 'material':
+            case 'dimensions':
+            case 'weight':
+            case 'print_time':
+              product[header.trim()] = value;
+              break;
+            case 'price':
+              product.price = value;
+              break;
+            case 'colors':
+              product.colors = value ? value.split(';').map(c => c.trim()) : [];
+              break;
+            case 'images':
+              product.images = value ? value.split(';').map(i => i.trim()) : [];
+              break;
+            case 'featured':
+              product.featured = parseInt(value) || 0;
+              break;
+          }
+        });
+
+        if (product.name && product.description) {
+          products.push(product);
+        }
+      }
+
+      if (products.length === 0) {
+        toast({
+          title: "No valid products found",
+          description: "The CSV file contains no valid product data",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Import products to database
+      const { error } = await supabase
+        .from('products')
+        .insert(products);
+
+      if (error) throw error;
+
+      // Reload products
+      await loadProducts();
+
+      toast({
+        title: "Import successful",
+        description: `Imported ${products.length} products from CSV`,
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Import failed",
+        description: `Failed to import products: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setImporting(false);
+      // Reset file input
+      if (event.target) {
+        event.target.value = '';
+      }
     }
   };
 
@@ -226,10 +367,58 @@ export default function AdminDashboard() {
             />
           </div>
           {activeTab === 'products' && (
-            <Button onClick={() => setLocation('/admin/products/new')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setLocation('/admin/products/new')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Product
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={handleExportProducts}
+                disabled={products.length === 0}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleImportProducts}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  disabled={importing}
+                />
+                <Button variant="outline" disabled={importing}>
+                  {importing ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Import CSV
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = '/sample-products.csv';
+                  link.download = 'sample-products.csv';
+                  link.click();
+                }}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Sample CSV
+              </Button>
+            </div>
           )}
         </div>
 
