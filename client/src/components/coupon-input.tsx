@@ -51,11 +51,19 @@ export default function CouponInput({
         .single();
 
       if (error || !coupon) {
-        toast({
-          title: "Invalid coupon code",
-          description: "The coupon code you entered is not valid",
-          variant: "destructive",
-        });
+        if (error?.code === '42P01') {
+          toast({
+            title: "Coupon system not available",
+            description: "The coupon system is not yet set up. Please contact support.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Invalid coupon code",
+            description: "The coupon code you entered is not valid",
+            variant: "destructive",
+          });
+        }
         return;
       }
 

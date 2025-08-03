@@ -30,8 +30,13 @@ export default function PromotionalBanner() {
         .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching banner:', error);
+      if (error) {
+        // Table doesn't exist or no data found - this is expected during initial setup
+        if (error.code === '42P01' || error.code === 'PGRST116') {
+          console.log('Banner table not found or no active banners');
+        } else {
+          console.error('Error fetching banner:', error);
+        }
         return;
       }
 

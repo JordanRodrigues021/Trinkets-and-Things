@@ -9,6 +9,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminProductForm from "@/pages/admin-product-form";
 import AdminBanners from "@/pages/admin-banners";
 import AdminCoupons from "@/pages/admin-coupons";
+import DatabaseSetupPage from "@/pages/database-setup";
 import Checkout from "@/pages/checkout";
 import OrderConfirmation from "@/pages/order-confirmation";
 
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/admin/products/:id/edit" component={AdminProductForm} />
       <Route path="/admin/banners" component={AdminBanners} />
       <Route path="/admin/coupons" component={AdminCoupons} />
+      <Route path="/database-setup" component={DatabaseSetupPage} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/order-confirmation/:orderId" component={OrderConfirmation} />
       <Route component={NotFound} />

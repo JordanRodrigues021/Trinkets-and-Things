@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square, Megaphone, Tag } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square, Megaphone, Tag, Database as DatabaseIcon } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -763,6 +763,14 @@ export default function AdminDashboard() {
             >
               <Settings className="w-4 h-4 mr-2" />
               Settings
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation('/database-setup')}
+            >
+              <DatabaseIcon className="w-4 h-4 mr-2" />
+              Setup DB
             </Button>
           </div>
         </div>
