@@ -9,8 +9,9 @@ export interface Database {
           price: string;
           sale_price: string | null;
           category: string;
-          colors: string[];
+          available_colors: string[];
           disabled_colors: string[];
+          is_customizable: number;
           images: string[];
           featured: number;
           customizable: number;
@@ -23,8 +24,9 @@ export interface Database {
           price: string;
           sale_price?: string | null;
           category: string;
-          colors: string[];
+          available_colors: string[];
           disabled_colors?: string[];
+          is_customizable?: number;
           images: string[];
           featured?: number;
           customizable?: number;
@@ -37,8 +39,9 @@ export interface Database {
           price?: string;
           sale_price?: string | null;
           category?: string;
-          colors?: string[];
+          available_colors?: string[];
           disabled_colors?: string[];
+          is_customizable?: number;
           images?: string[];
           featured?: number;
           customizable?: number;
@@ -299,6 +302,58 @@ export interface Database {
           is_active?: number;
           start_date?: string;
           end_date?: string | null;
+          created_at?: string;
+        };
+      };
+      custom_sections: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          is_active: number;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          is_active?: number;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          is_active?: number;
+          display_order?: number;
+          created_at?: string;
+        };
+      };
+      section_products: {
+        Row: {
+          id: string;
+          section_id: string;
+          product_id: string;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          section_id: string;
+          product_id: string;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          section_id?: string;
+          product_id?: string;
+          display_order?: number;
           created_at?: string;
         };
       };

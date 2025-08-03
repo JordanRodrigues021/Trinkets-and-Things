@@ -10,6 +10,8 @@ import AdminProductForm from "@/pages/admin-product-form";
 import AdminBanners from "@/pages/admin-banners";
 import AdminCoupons from "@/pages/admin-coupons";
 import AdminReviews from "@/pages/admin-reviews";
+import AdminSections from "@/pages/admin-sections";
+import SectionView from "@/pages/section-view";
 import DatabaseSetupPage from "@/pages/database-setup";
 import LeaveReviewPage from "@/pages/leave-review";
 import Checkout from "@/pages/checkout";
@@ -26,6 +28,8 @@ function Router() {
       <Route path="/admin/banners" component={AdminBanners} />
       <Route path="/admin/coupons" component={AdminCoupons} />
       <Route path="/admin/reviews" component={AdminReviews} />
+      <Route path="/admin/sections" component={AdminSections} />
+      <Route path="/section/:slug" component={SectionView} />
       <Route path="/database-setup" component={DatabaseSetupPage} />
       <Route path="/leave-review" component={LeaveReviewPage} />
       <Route path="/checkout" component={Checkout} />

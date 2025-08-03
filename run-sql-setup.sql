@@ -93,3 +93,50 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access to approved reviews" ON reviews FOR SELECT USING (is_approved = 1);
 CREATE POLICY "Allow public insert for new reviews" ON reviews FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow authenticated users to manage reviews" ON reviews FOR ALL USING (auth.role() = 'authenticated');
+
+-- Create custom sections table
+CREATE TABLE IF NOT EXISTS custom_sections (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  description TEXT,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Create section products junction table
+CREATE TABLE IF NOT EXISTS section_products (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  section_id TEXT NOT NULL,
+  product_id TEXT NOT NULL,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (section_id) REFERENCES custom_sections(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  UNIQUE(section_id, product_id)
+);
+
+-- Grant permissions for custom sections
+GRANT ALL ON custom_sections TO authenticated;
+GRANT ALL ON section_products TO authenticated;
+GRANT SELECT ON custom_sections TO anon;
+GRANT SELECT ON section_products TO anon;
+
+-- Enable RLS for custom sections
+ALTER TABLE custom_sections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE section_products ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for custom sections
+CREATE POLICY "Allow public read access to active sections" ON custom_sections FOR SELECT USING (is_active = 1);
+CREATE POLICY "Allow authenticated users to manage sections" ON custom_sections FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow public read access to section products" ON section_products FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated users to manage section products" ON section_products FOR ALL USING (auth.role() = 'authenticated');
+
+-- Insert sample custom sections
+INSERT INTO custom_sections (name, slug, description, display_order)
+VALUES 
+('Featured Products', 'featured', 'Our handpicked selection of premium 3D printed items', 1),
+('New Arrivals', 'new-arrivals', 'Latest additions to our 3D printing collection', 2),
+('Best Sellers', 'best-sellers', 'Most popular items loved by our customers', 3)
+ON CONFLICT (slug) DO NOTHING;

@@ -35,6 +35,7 @@ export default function AdminBanners() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [sections, setSections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -65,6 +66,7 @@ export default function AdminBanners() {
 
   useEffect(() => {
     loadBanners();
+    loadSections();
   }, []);
 
   const loadBanners = async () => {
@@ -95,6 +97,22 @@ export default function AdminBanners() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('custom_sections')
+        .select('*')
+        .eq('is_active', 1)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setSections(data || []);
+    } catch (error: any) {
+      console.error('Sections load error:', error);
+      // Sections are optional, don't show error to user
     }
   };
 
@@ -296,6 +314,25 @@ export default function AdminBanners() {
                 <div className="space-y-2">
                   <Label htmlFor="button_link">Button Link (Optional)</Label>
                   <Input id="button_link" {...form.register('button_link')} placeholder="e.g., #products or /sale" />
+                  {sections.length > 0 && (
+                    <div className="mt-2">
+                      <Label className="text-xs text-muted-foreground">Quick Select Section:</Label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {sections.map((section) => (
+                          <Button
+                            key={section.id}
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => form.setValue('button_link', `/section/${section.slug}`)}
+                            className="text-xs"
+                          >
+                            {section.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
