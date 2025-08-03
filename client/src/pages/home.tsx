@@ -7,6 +7,7 @@ import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
 import ProductModal from "@/components/product-modal";
 import ReviewsCarousel from "@/components/reviews-carousel";
+import ReviewLinkBanner from "@/components/review-link-banner";
 import InstagramSection from "@/components/instagram-section";
 
 export default function Home() {
@@ -32,6 +33,11 @@ export default function Home() {
             </p>
           </div>
           <ReviewsCarousel />
+          
+          {/* Review Link Banner */}
+          <div className="mt-8">
+            <ReviewLinkBanner />
+          </div>
         </div>
       </section>
 

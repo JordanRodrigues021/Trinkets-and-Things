@@ -77,12 +77,22 @@ export default function AdminBanners() {
 
       if (error) throw error;
       setBanners(data || []);
-    } catch (error) {
-      toast({
-        title: "Error loading banners",
-        description: "Failed to fetch banners from database",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      console.error('Banner load error:', error);
+      
+      if (error.code === '42P01') {
+        toast({
+          title: "Database setup required",
+          description: "Banner tables need to be created. Go to Database Setup.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error loading banners",
+          description: error.message || "Failed to fetch banners from database",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -128,11 +138,21 @@ export default function AdminBanners() {
       setShowForm(false);
       loadBanners();
     } catch (error: any) {
-      toast({
-        title: "Error saving banner",
-        description: "Failed to save banner details",
-        variant: "destructive",
-      });
+      console.error('Banner save error:', error);
+      
+      if (error.code === '42P01') {
+        toast({
+          title: "Database setup required",
+          description: "Please set up the database tables first. Go to Database Setup in the admin dashboard.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error saving banner",
+          description: error.message || "Failed to save banner details",
+          variant: "destructive",
+        });
+      }
     }
   };
 

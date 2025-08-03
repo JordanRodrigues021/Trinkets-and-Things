@@ -24,8 +24,11 @@ export default function ReviewsCarousel() {
 
         if (error) throw error;
         setReviews(data || []);
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
+      } catch (error: any) {
+        if (error.code !== '42P01') {
+          console.error('Error fetching reviews:', error);
+        }
+        // If reviews table doesn't exist, just show empty state gracefully
       } finally {
         setLoading(false);
       }
