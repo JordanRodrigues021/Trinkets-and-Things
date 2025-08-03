@@ -46,7 +46,7 @@ export default function ProductGallery({ onProductSelect }: ProductGalleryProps)
       case 'popular':
         return b.featured - a.featured;
       default:
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     }
   }) : [];
 

@@ -25,7 +25,7 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
 
 
 
-  const availableColors = product.colors.filter(color => 
+  const availableColors = (product.available_colors || product.colors || []).filter(color => 
     !(product.disabled_colors || []).includes(color)
   );
 
