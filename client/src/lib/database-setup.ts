@@ -2,33 +2,65 @@ import { supabase } from './supabase';
 
 export async function setupDatabase() {
   try {
-    // First try to check if tables exist by querying them
+    // Check if critical fields exist by testing them
+    const { error: reviewFieldError } = await supabase
+      .from('reviews')
+      .select('product_purchased')
+      .limit(1);
+
     const { error: bannerCheckError } = await supabase
       .from('banners')
       .select('id')
       .limit(1);
 
-    const { error: couponCheckError } = await supabase
-      .from('coupons')
+    const { error: customSectionError } = await supabase
+      .from('custom_sections')
       .select('id')
       .limit(1);
 
-    // If both queries succeed, tables exist
-    if (!bannerCheckError && !couponCheckError) {
-      console.log('✅ Database tables already exist');
-      return { success: true, message: 'Database tables already exist' };
+    // If all queries succeed, database is fully set up
+    if (!reviewFieldError && !bannerCheckError && !customSectionError) {
+      console.log('✅ Database is fully configured');
+      return { success: true, message: 'Database is fully configured' };
     }
 
-    // Tables don't exist, we need to create them via SQL
-    console.log('❌ Database tables need to be created');
+    // Missing database components detected
+    console.log('❌ Database missing some required components');
     
     return {
       success: false,
-      message: 'Database tables need to be created. Please run the SQL commands in your Supabase dashboard.',
-      sqlCommands: `
--- Create banners table
+      message: 'Missing database components detected. Please run the SQL commands below.',
+      sqlCommands: `-- ============================================================================
+-- MISSING DATABASE COMPONENTS - ADD ONLY WHAT'S NEEDED
+-- ============================================================================
+
+-- 1. Add missing product_purchased field to reviews table (if missing)
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS product_purchased TEXT;
+
+-- 2. Create custom_sections table for enhanced category management (if missing)
+CREATE TABLE IF NOT EXISTS custom_sections (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  description TEXT,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. Create section_products table for linking products to sections (if missing)
+CREATE TABLE IF NOT EXISTS section_products (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  section_id UUID NOT NULL REFERENCES custom_sections(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(section_id, product_id)
+);
+
+-- 4. Create banners table for promotional banners (if missing)
 CREATE TABLE IF NOT EXISTS banners (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   button_text TEXT,
@@ -37,45 +69,56 @@ CREATE TABLE IF NOT EXISTS banners (
   text_color TEXT NOT NULL DEFAULT '#FFFFFF',
   is_active INTEGER NOT NULL DEFAULT 1,
   priority INTEGER NOT NULL DEFAULT 0,
-  start_date TIMESTAMP NOT NULL DEFAULT NOW(),
-  end_date TIMESTAMP,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  end_date TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create coupons table
+-- 5. Create coupons table for discount codes (if missing)
 CREATE TABLE IF NOT EXISTS coupons (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   code TEXT NOT NULL UNIQUE,
   description TEXT NOT NULL,
-  discount_type TEXT NOT NULL, -- 'percentage' or 'fixed'
+  discount_type TEXT NOT NULL CHECK (discount_type IN ('percentage', 'fixed')),
   discount_value DECIMAL(10,2) NOT NULL,
   min_order_amount DECIMAL(10,2),
   max_uses INTEGER,
   current_uses INTEGER NOT NULL DEFAULT 0,
   is_active INTEGER NOT NULL DEFAULT 1,
-  start_date TIMESTAMP NOT NULL DEFAULT NOW(),
-  end_date TIMESTAMP,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  end_date TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Update orders table to include coupon information
+-- 6. Add missing coupon fields to orders table (if missing)
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal_amount DECIMAL(10,2);
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_code TEXT;
 
--- Update existing orders
-UPDATE orders SET subtotal_amount = total_amount, discount_amount = 0.00 WHERE subtotal_amount IS NULL;
+-- 7. Update existing orders to have subtotal amounts (only if needed)
+UPDATE orders SET subtotal_amount = total_amount WHERE subtotal_amount IS NULL;
+UPDATE orders SET discount_amount = 0.00 WHERE discount_amount IS NULL;
 
--- Insert sample promotional banner
-INSERT INTO banners (title, description, button_text, button_link, background_color, text_color, priority)
-VALUES 
-('🪔 Diwali Special Sale! 🪔', 'Get 25% off on all 3D printed items! Perfect for Diwali decorations and gifts.', 'Shop Diwali Collection', '#products', '#8B5CF6', '#FFFFFF', 100);
+-- 8. Disable RLS for new tables (if they exist)
+ALTER TABLE custom_sections DISABLE ROW LEVEL SECURITY;
+ALTER TABLE section_products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE banners DISABLE ROW LEVEL SECURITY;
+ALTER TABLE coupons DISABLE ROW LEVEL SECURITY;
 
--- Insert sample coupons
-INSERT INTO coupons (code, description, discount_type, discount_value, max_uses)
-VALUES 
-('DIWALI25', '25% off for Diwali celebration', 'percentage', 25.00, 100),
-('SAVE50', 'Flat ₹50 off on orders above ₹200', 'fixed', 50.00, 50);
+-- 9. Insert sample data for new features (optional)
+INSERT INTO custom_sections (name, slug, description, display_order) VALUES
+('Featured Items', 'featured', 'Our most popular products', 10),
+('New Arrivals', 'new-arrivals', 'Latest additions', 20)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO banners (title, description, button_text, button_link, background_color, text_color, priority) VALUES
+('New Year Special!', 'Get 20% off on all 3D printed items', 'Shop Now', '/products', '#E11D48', '#FFFFFF', 10)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO coupons (code, description, discount_type, discount_value, max_uses) VALUES
+('WELCOME10', '10% off for new customers', 'percentage', 10.00, 100),
+('SAVE50', '₹50 off on orders above ₹2000', 'fixed', 50.00, 50)
+ON CONFLICT (code) DO NOTHING;
 `
     };
 
