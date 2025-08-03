@@ -189,9 +189,10 @@ export interface Database {
         Row: {
           id: string;
           customer_name: string;
-          customer_email: string;
+          customer_email: string | null;
           rating: number;
           review_text: string;
+          product_purchased: string | null;
           profile_picture_url: string | null;
           is_approved: boolean;
           created_at: string;
@@ -199,9 +200,10 @@ export interface Database {
         Insert: {
           id?: string;
           customer_name: string;
-          customer_email: string;
+          customer_email?: string | null;
           rating: number;
           review_text: string;
+          product_purchased?: string | null;
           profile_picture_url?: string | null;
           is_approved?: boolean;
           created_at?: string;
@@ -209,9 +211,10 @@ export interface Database {
         Update: {
           id?: string;
           customer_name?: string;
-          customer_email?: string;
+          customer_email?: string | null;
           rating?: number;
           review_text?: string;
+          product_purchased?: string | null;
           profile_picture_url?: string | null;
           is_approved?: boolean;
           created_at?: string;

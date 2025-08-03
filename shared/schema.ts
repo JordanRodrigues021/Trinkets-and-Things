@@ -128,6 +128,39 @@ export const coupons = pgTable("coupons", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Reviews table
+export const reviews = pgTable("reviews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email"),
+  rating: integer("rating").notNull(),
+  reviewText: text("review_text").notNull(),
+  productPurchased: text("product_purchased"), // Which product they bought
+  profilePictureUrl: text("profile_picture_url"), // Optional profile picture
+  isApproved: integer("is_approved").notNull().default(0), // 0 = pending, 1 = approved
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Custom sections table for enhanced category management
+export const customSections = pgTable("custom_sections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  isActive: integer("is_active").notNull().default(1), // 0 = inactive, 1 = active
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Section products table for linking products to custom sections
+export const sectionProducts = pgTable("section_products", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sectionId: varchar("section_id").notNull().references(() => customSections.id, { onDelete: "cascade" }),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas for ecommerce
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
@@ -155,6 +188,21 @@ export const insertCouponSchema = createInsertSchema(coupons).omit({
   createdAt: true,
 });
 
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCustomSectionSchema = createInsertSchema(customSections).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSectionProductSchema = createInsertSchema(sectionProducts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types for ecommerce
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
@@ -166,3 +214,9 @@ export type InsertBanner = z.infer<typeof insertBannerSchema>;
 export type Banner = typeof banners.$inferSelect;
 export type InsertCoupon = z.infer<typeof insertCouponSchema>;
 export type Coupon = typeof coupons.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type Review = typeof reviews.$inferSelect;
+export type InsertCustomSection = z.infer<typeof insertCustomSectionSchema>;
+export type CustomSection = typeof customSections.$inferSelect;
+export type InsertSectionProduct = z.infer<typeof insertSectionProductSchema>;
+export type SectionProduct = typeof sectionProducts.$inferSelect;
