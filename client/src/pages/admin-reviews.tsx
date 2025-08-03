@@ -118,7 +118,7 @@ export default function AdminReviews() {
     return true;
   });
 
-  const reviewUrl = `${window.location.origin}/leave-review`;
+  const reviewUrl = `https://trinketsandthings.co.in/leave-review`;
   
   const copyReviewLink = async (customParams?: string) => {
     const url = customParams ? `${reviewUrl}?${customParams}` : reviewUrl;

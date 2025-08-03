@@ -772,14 +772,7 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocation('/database-setup')}
-            >
-              <DatabaseIcon className="w-4 h-4 mr-2" />
-              Setup DB
-            </Button>
+
           </div>
         </div>
 
@@ -1308,35 +1301,152 @@ export default function AdminDashboard() {
 
         {activeTab === 'settings' && (
           <div className="space-y-6">
+            {/* Site Configuration */}
             <Card>
               <CardHeader>
-                <CardTitle>Site Settings</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  Site Configuration
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Manage your website settings and configurations
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {settings.map((setting) => (
-                  <div key={setting.id} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium capitalize">
-                        {setting.setting_key.replace(/_/g, ' ')}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {setting.setting_value}
-                      </p>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Payment Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Payment Settings</h3>
+                    <div className="space-y-3">
+                      {settings
+                        .filter(s => s.setting_key.includes('upi') || s.setting_key.includes('payment'))
+                        .map((setting) => (
+                        <div key={setting.id} className="p-4 border rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium capitalize mb-1">
+                                {setting.setting_key.replace(/_/g, ' ')}
+                              </h4>
+                              <p className="text-sm text-muted-foreground break-all">
+                                {setting.setting_value.length > 50 
+                                  ? `${setting.setting_value.substring(0, 50)}...` 
+                                  : setting.setting_value}
+                              </p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const newValue = prompt(`Enter new value for ${setting.setting_key}:`, setting.setting_value);
+                                if (newValue !== null) {
+                                  updateSetting(setting.setting_key, newValue);
+                                }
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        const newValue = prompt(`Enter new value for ${setting.setting_key}:`, setting.setting_value);
-                        if (newValue !== null) {
-                          updateSetting(setting.setting_key, newValue);
-                        }
-                      }}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
                   </div>
-                ))}
+
+                  {/* General Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">General Settings</h3>
+                    <div className="space-y-3">
+                      {settings
+                        .filter(s => !s.setting_key.includes('upi') && !s.setting_key.includes('payment'))
+                        .map((setting) => (
+                        <div key={setting.id} className="p-4 border rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium capitalize mb-1">
+                                {setting.setting_key.replace(/_/g, ' ')}
+                              </h4>
+                              <p className="text-sm text-muted-foreground break-all">
+                                {setting.setting_value.length > 50 
+                                  ? `${setting.setting_value.substring(0, 50)}...` 
+                                  : setting.setting_value}
+                              </p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const newValue = prompt(`Enter new value for ${setting.setting_key}:`, setting.setting_value);
+                                if (newValue !== null) {
+                                  updateSetting(setting.setting_key, newValue);
+                                }
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {settings.length === 0 && (
+                  <div className="text-center py-12">
+                    <Settings className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-lg font-semibold mb-2">No Settings Configured</h3>
+                    <p className="text-muted-foreground">
+                      Settings will appear here when you configure them through the application
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DatabaseIcon className="w-5 h-5" />
+                  Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2"
+                    onClick={() => setLocation('/database-setup')}
+                  >
+                    <DatabaseIcon className="w-8 h-8" />
+                    <div className="text-center">
+                      <div className="font-medium">Database Setup</div>
+                      <div className="text-xs text-muted-foreground">Configure database tables</div>
+                    </div>
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2"
+                    onClick={() => window.open('/leave-review', '_blank')}
+                  >
+                    <Star className="w-8 h-8" />
+                    <div className="text-center">
+                      <div className="font-medium">Review Page</div>
+                      <div className="text-xs text-muted-foreground">Test customer review form</div>
+                    </div>
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2"
+                    onClick={() => setLocation('/admin/reviews')}
+                  >
+                    <Eye className="w-8 h-8" />
+                    <div className="text-center">
+                      <div className="font-medium">Manage Reviews</div>
+                      <div className="text-xs text-muted-foreground">Approve and manage reviews</div>
+                    </div>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

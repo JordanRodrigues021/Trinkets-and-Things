@@ -16,9 +16,6 @@ export default function Home() {
       <PromotionalBanner />
       <Navigation />
       <HeroSection />
-      
-      {/* Second promotional banner before products */}
-      <PromotionalBanner />
       <ProductGallery />
       
       {/* Customer Reviews Section */}

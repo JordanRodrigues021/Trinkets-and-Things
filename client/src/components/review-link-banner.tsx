@@ -7,7 +7,7 @@ interface ReviewLinkBannerProps {
 }
 
 export default function ReviewLinkBanner({ className = '' }: ReviewLinkBannerProps) {
-  const reviewUrl = `${window.location.origin}/leave-review`;
+  const reviewUrl = `https://trinketsandthings.co.in/leave-review`;
   
   const copyReviewLink = async () => {
     try {
