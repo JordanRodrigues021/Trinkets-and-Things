@@ -9,10 +9,6 @@ export interface Database {
           price: string;
           sale_price: string | null;
           category: string;
-          material: string;
-          dimensions: string;
-          weight: string;
-          print_time: string;
           colors: string[];
           disabled_colors: string[];
           images: string[];
@@ -27,10 +23,6 @@ export interface Database {
           price: string;
           sale_price?: string | null;
           category: string;
-          material: string;
-          dimensions: string;
-          weight: string;
-          print_time: string;
           colors: string[];
           disabled_colors?: string[];
           images: string[];
@@ -45,10 +37,6 @@ export interface Database {
           price?: string;
           sale_price?: string | null;
           category?: string;
-          material?: string;
-          dimensions?: string;
-          weight?: string;
-          print_time?: string;
           colors?: string[];
           disabled_colors?: string[];
           images?: string[];

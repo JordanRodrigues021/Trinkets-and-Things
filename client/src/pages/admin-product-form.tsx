@@ -25,10 +25,6 @@ const productSchema = z.object({
   category: z.enum(['functional', 'artistic', 'prototypes'], {
     required_error: "Please select a category",
   }),
-  material: z.string().min(1, "Material is required"),
-  dimensions: z.string().min(1, "Dimensions are required"),
-  weight: z.string().min(1, "Weight is required"),
-  print_time: z.string().min(1, "Print time is required"),
   featured: z.number().min(0).max(2),
   customizable: z.number().min(0).max(1),
 });
@@ -55,10 +51,6 @@ export default function AdminProductForm() {
       description: '',
       price: '',
       category: 'functional',
-      material: '',
-      dimensions: '',
-      weight: '',
-      print_time: '',
       featured: 0,
       customizable: 0,
     },
@@ -100,10 +92,6 @@ export default function AdminProductForm() {
         description: data.description,
         price: data.price,
         category: data.category as 'functional' | 'artistic' | 'prototypes',
-        material: data.material,
-        dimensions: data.dimensions,
-        weight: data.weight,
-        print_time: data.print_time,
         featured: data.featured,
         customizable: data.customizable || 0,
       });
@@ -328,63 +316,7 @@ export default function AdminProductForm() {
             </CardContent>
           </Card>
 
-          {/* Technical Specifications */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Technical Specifications</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="material">Material *</Label>
-                  <Input
-                    id="material"
-                    {...form.register('material')}
-                    placeholder="e.g., PLA, ABS, PETG"
-                  />
-                  {form.formState.errors.material && (
-                    <p className="text-sm text-destructive">{form.formState.errors.material.message}</p>
-                  )}
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="dimensions">Dimensions *</Label>
-                  <Input
-                    id="dimensions"
-                    {...form.register('dimensions')}
-                    placeholder="e.g., 15cm × 15cm × 20cm"
-                  />
-                  {form.formState.errors.dimensions && (
-                    <p className="text-sm text-destructive">{form.formState.errors.dimensions.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="weight">Weight *</Label>
-                  <Input
-                    id="weight"
-                    {...form.register('weight')}
-                    placeholder="e.g., 250g"
-                  />
-                  {form.formState.errors.weight && (
-                    <p className="text-sm text-destructive">{form.formState.errors.weight.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="print_time">Print Time *</Label>
-                  <Input
-                    id="print_time"
-                    {...form.register('print_time')}
-                    placeholder="e.g., 8 hours"
-                  />
-                  {form.formState.errors.print_time && (
-                    <p className="text-sm text-destructive">{form.formState.errors.print_time.message}</p>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Colors */}
           <Card>
