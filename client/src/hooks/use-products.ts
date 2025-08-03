@@ -11,15 +11,13 @@ interface Product {
   name: string;
   description: string;
   price: string;
+  sale_price: string | null;
   category: string;
-  material: string;
-  dimensions: string;
-  weight: string;
-  printTime: string;
   colors: string[];
+  disabled_colors: string[];
   images: string[];
-  modelUrl?: string | null;
   featured: number;
+  customizable: number;
   createdAt: string;
 }
 
@@ -54,15 +52,13 @@ export function useProducts(options: UseProductsOptions = {}) {
           name: product.name,
           description: product.description,
           price: product.price.toString(),
+          sale_price: product.sale_price,
           category: product.category,
-          material: product.material,
-          dimensions: product.dimensions,
-          weight: product.weight,
-          printTime: product.print_time,
           colors: product.colors || [],
+          disabled_colors: product.disabled_colors || [],
           images: product.images || [],
-          modelUrl: product.model_url,
           featured: product.featured || 0,
+          customizable: product.customizable || 0,
           createdAt: product.created_at,
         }));
 
@@ -105,15 +101,13 @@ export function useProduct(id: string) {
             name: product.name,
             description: product.description,
             price: product.price.toString(),
+            sale_price: product.sale_price,
             category: product.category,
-            material: product.material,
-            dimensions: product.dimensions,
-            weight: product.weight,
-            printTime: product.print_time,
             colors: product.colors || [],
+            disabled_colors: product.disabled_colors || [],
             images: product.images || [],
-            modelUrl: product.model_url,
             featured: product.featured || 0,
+            customizable: product.customizable || 0,
             createdAt: product.created_at,
           };
           setData(transformedProduct);

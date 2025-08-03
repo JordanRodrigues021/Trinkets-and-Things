@@ -23,6 +23,8 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
   const { addItem } = useCart();
   const { toast } = useToast();
 
+
+
   const availableColors = product.colors.filter(color => 
     !(product.disabled_colors || []).includes(color)
   );
@@ -86,46 +88,41 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <Select value={selectedColor} onValueChange={setSelectedColor}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select color">
-                {selectedColor && (
-                  <div className="flex items-center gap-2">
-                    <Palette className="w-4 h-4" />
-                    {selectedColor}
-                  </div>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {availableColors.map((color) => (
-                <SelectItem key={color} value={color}>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{
-                        backgroundColor: getColorHex(color)
-                      }}
-                    />
-                    {color}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <Button onClick={handleAddToCart} disabled={!selectedColor || (product.customizable === 1 && !customName.trim())}>
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Add to Cart
-        </Button>
+      {/* Color Selection */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Choose Color *</Label>
+        <Select value={selectedColor} onValueChange={setSelectedColor}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select color">
+              {selectedColor && (
+                <div className="flex items-center gap-2">
+                  <Palette className="w-4 h-4" />
+                  {selectedColor}
+                </div>
+              )}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {availableColors.map((color) => (
+              <SelectItem key={color} value={color}>
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-4 h-4 rounded-full border border-gray-300"
+                    style={{
+                      backgroundColor: getColorHex(color)
+                    }}
+                  />
+                  {color}
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Custom name input for customizable products */}
       {product.customizable === 1 && (
-        <div className="space-y-1">
+        <div className="space-y-2">
           <Label htmlFor="customName" className="text-sm font-medium">
             Enter custom text for this item *
           </Label>
@@ -138,6 +135,16 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
           />
         </div>
       )}
+      
+      {/* Add to Cart Button */}
+      <Button 
+        onClick={handleAddToCart} 
+        disabled={!selectedColor || (product.customizable === 1 && !customName.trim())}
+        className="w-full"
+      >
+        <ShoppingCart className="w-4 h-4 mr-2" />
+        Add to Cart
+      </Button>
     </div>
   );
 }
