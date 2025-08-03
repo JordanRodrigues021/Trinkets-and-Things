@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square, Megaphone, Tag } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -19,7 +19,7 @@ type Review = Database['public']['Tables']['reviews']['Row'];
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'contacts' | 'reviews' | 'settings'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'contacts' | 'reviews' | 'banners' | 'coupons' | 'settings'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -739,6 +739,22 @@ export default function AdminDashboard() {
             >
               <Eye className="w-4 h-4 mr-2" />
               Reviews ({reviews.length})
+            </Button>
+            <Button
+              variant={activeTab === 'banners' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLocation('/admin/banners')}
+            >
+              <Megaphone className="w-4 h-4 mr-2" />
+              Banners
+            </Button>
+            <Button
+              variant={activeTab === 'coupons' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLocation('/admin/coupons')}
+            >
+              <Tag className="w-4 h-4 mr-2" />
+              Coupons
             </Button>
             <Button
               variant={activeTab === 'settings' ? 'default' : 'ghost'}

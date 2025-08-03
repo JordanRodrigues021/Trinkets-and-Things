@@ -1,4 +1,5 @@
 import Navigation from "@/components/navigation";
+import PromotionalBanner from "@/components/promotional-banner";
 import HeroSection from "@/components/hero-section";
 import ProductGallery from "@/components/product-gallery";
 import AboutSection from "@/components/about-section";
@@ -11,8 +12,12 @@ import InstagramSection from "@/components/instagram-section";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <PromotionalBanner />
       <Navigation />
       <HeroSection />
+      
+      {/* Second promotional banner before products */}
+      <PromotionalBanner />
       <ProductGallery />
       
       {/* Customer Reviews Section */}

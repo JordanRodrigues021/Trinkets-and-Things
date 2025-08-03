@@ -14,6 +14,10 @@ import { useCart } from '@/contexts/cart-context';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft, CreditCard, Truck, QrCode } from 'lucide-react';
 import PriceDisplay from '@/components/price-display';
+import CouponInput from '@/components/coupon-input';
+import type { Database } from '@/types/database';
+
+type Coupon = Database['public']['Tables']['coupons']['Row'];
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -31,6 +35,8 @@ export default function Checkout() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [upiQrCode, setUpiQrCode] = useState<string>('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const form = useForm<CheckoutForm>({
     resolver: zodResolver(checkoutSchema),
@@ -63,6 +69,19 @@ export default function Checkout() {
     loadUpiQrCode();
   });
 
+  const handleCouponApplied = (coupon: Coupon, discount: number) => {
+    setAppliedCoupon(coupon);
+    setDiscountAmount(discount);
+  };
+
+  const handleCouponRemoved = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+  };
+
+  const subtotalAmount = getTotalPrice();
+  const finalTotalAmount = subtotalAmount - discountAmount;
+
   const onSubmit = async (data: CheckoutForm) => {
     if (cart.length === 0) {
       toast({
@@ -76,7 +95,8 @@ export default function Checkout() {
     setSubmitting(true);
 
     try {
-      const totalAmount = getTotalPrice();
+      const subtotalAmount = getTotalPrice();
+      const finalTotalAmount = subtotalAmount - discountAmount;
 
       // Create order
       const { data: order, error: orderError } = await supabase
@@ -85,7 +105,10 @@ export default function Checkout() {
           customer_name: data.customerName,
           customer_email: data.customerEmail,
           customer_phone: data.customerPhone,
-          total_amount: totalAmount.toString(),
+          subtotal_amount: subtotalAmount.toString(),
+          discount_amount: discountAmount.toString(),
+          total_amount: finalTotalAmount.toString(),
+          coupon_code: appliedCoupon?.code || null,
           payment_method: data.paymentMethod,
           notes: data.notes || null,
         })
@@ -111,6 +134,16 @@ export default function Checkout() {
 
       if (itemsError) throw itemsError;
 
+      // Update coupon usage count if coupon was applied
+      if (appliedCoupon) {
+        await supabase
+          .from('coupons')
+          .update({ 
+            current_uses: appliedCoupon.current_uses + 1 
+          })
+          .eq('id', appliedCoupon.id);
+      }
+
       // Send WhatsApp notification to owner
       try {
         console.log('🔔 Preparing WhatsApp notification...');
@@ -118,7 +151,7 @@ export default function Checkout() {
           customerName: data.customerName,
           customerEmail: data.customerEmail,
           customerPhone: data.customerPhone,
-          total: totalAmount.toFixed(2),
+          total: finalTotalAmount.toFixed(2),
           items: cart.map(item => ({
             name: item.productName,
             quantity: item.quantity,
@@ -256,15 +289,37 @@ export default function Checkout() {
                   </div>
                 ))}
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center text-xl font-bold">
+                <div className="border-t pt-4 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span>Subtotal:</span>
+                    <span>₹{subtotalAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                  
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-green-600">
+                      <span>Discount ({appliedCoupon?.code}):</span>
+                      <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between items-center text-xl font-bold border-t pt-2">
                     <span>Total:</span>
-                    <span>₹{getTotalPrice().toLocaleString('en-IN')}</span>
+                    <span>₹{finalTotalAmount.toLocaleString('en-IN')}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">
                     <Truck className="w-4 h-4 inline mr-1" />
                     Free pickup from A Level Classroom at Don Bosco International School
                   </p>
+                </div>
+
+                {/* Coupon Input Section */}
+                <div className="border-t pt-4">
+                  <CouponInput
+                    orderTotal={subtotalAmount}
+                    onCouponApplied={handleCouponApplied}
+                    onCouponRemoved={handleCouponRemoved}
+                    appliedCoupon={appliedCoupon}
+                  />
                 </div>
               </CardContent>
             </Card>

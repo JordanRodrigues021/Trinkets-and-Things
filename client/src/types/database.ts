@@ -80,7 +80,10 @@ export interface Database {
           customer_name: string;
           customer_email: string;
           customer_phone: string;
+          subtotal_amount: string;
+          discount_amount: string;
           total_amount: string;
+          coupon_code: string | null;
           payment_method: string;
           payment_status: string;
           order_status: string;
@@ -93,7 +96,10 @@ export interface Database {
           customer_name: string;
           customer_email: string;
           customer_phone: string;
+          subtotal_amount: string;
+          discount_amount?: string;
           total_amount: string;
+          coupon_code?: string | null;
           payment_method: string;
           payment_status?: string;
           order_status?: string;
@@ -106,7 +112,10 @@ export interface Database {
           customer_name?: string;
           customer_email?: string;
           customer_phone?: string;
+          subtotal_amount?: string;
+          discount_amount?: string;
           total_amount?: string;
+          coupon_code?: string | null;
           payment_method?: string;
           payment_status?: string;
           order_status?: string;
@@ -202,6 +211,94 @@ export interface Database {
           review_text?: string;
           profile_picture_url?: string | null;
           is_approved?: boolean;
+          created_at?: string;
+        };
+      };
+      banners: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          button_text: string | null;
+          button_link: string | null;
+          background_color: string;
+          text_color: string;
+          is_active: number;
+          priority: number;
+          start_date: string;
+          end_date: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          button_text?: string | null;
+          button_link?: string | null;
+          background_color?: string;
+          text_color?: string;
+          is_active?: number;
+          priority?: number;
+          start_date?: string;
+          end_date?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          button_text?: string | null;
+          button_link?: string | null;
+          background_color?: string;
+          text_color?: string;
+          is_active?: number;
+          priority?: number;
+          start_date?: string;
+          end_date?: string | null;
+          created_at?: string;
+        };
+      };
+      coupons: {
+        Row: {
+          id: string;
+          code: string;
+          description: string;
+          discount_type: string;
+          discount_value: string;
+          min_order_amount: string | null;
+          max_uses: number | null;
+          current_uses: number;
+          is_active: number;
+          start_date: string;
+          end_date: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          description: string;
+          discount_type: string;
+          discount_value: string;
+          min_order_amount?: string | null;
+          max_uses?: number | null;
+          current_uses?: number;
+          is_active?: number;
+          start_date?: string;
+          end_date?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          code?: string;
+          description?: string;
+          discount_type?: string;
+          discount_value?: string;
+          min_order_amount?: string | null;
+          max_uses?: number | null;
+          current_uses?: number;
+          is_active?: number;
+          start_date?: string;
+          end_date?: string | null;
           created_at?: string;
         };
       };

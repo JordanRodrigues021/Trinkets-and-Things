@@ -64,7 +64,10 @@ export const orders = pgTable("orders", {
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   customerPhone: text("customer_phone").notNull(),
+  subtotalAmount: decimal("subtotal_amount", { precision: 10, scale: 2 }).notNull(),
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }).notNull().default("0.00"),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  couponCode: text("coupon_code"), // Applied coupon code
   paymentMethod: text("payment_method").notNull(), // 'cash', 'upi'
   paymentStatus: text("payment_status").notNull().default("pending"), // 'pending', 'confirmed', 'cancelled'
   orderStatus: text("order_status").notNull().default("placed"), // 'placed', 'confirmed', 'ready', 'completed', 'cancelled'
@@ -93,6 +96,38 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Promotional banners table
+export const banners = pgTable("banners", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  buttonText: text("button_text"), // Optional button text
+  buttonLink: text("button_link"), // Optional button link
+  backgroundColor: text("background_color").notNull().default("#3B82F6"), // Hex color
+  textColor: text("text_color").notNull().default("#FFFFFF"), // Hex color
+  isActive: integer("is_active").notNull().default(1), // 0 = inactive, 1 = active
+  priority: integer("priority").notNull().default(0), // Higher number = higher priority
+  startDate: timestamp("start_date").defaultNow().notNull(),
+  endDate: timestamp("end_date"), // Optional end date
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Coupons table
+export const coupons = pgTable("coupons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(),
+  description: text("description").notNull(),
+  discountType: text("discount_type").notNull(), // 'percentage' or 'fixed'
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
+  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }), // Optional minimum order
+  maxUses: integer("max_uses"), // Optional usage limit
+  currentUses: integer("current_uses").notNull().default(0),
+  isActive: integer("is_active").notNull().default(1), // 0 = inactive, 1 = active
+  startDate: timestamp("start_date").defaultNow().notNull(),
+  endDate: timestamp("end_date"), // Optional end date
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas for ecommerce
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
@@ -110,6 +145,16 @@ export const insertSiteSettingSchema = createInsertSchema(siteSettings).omit({
   updatedAt: true,
 });
 
+export const insertBannerSchema = createInsertSchema(banners).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCouponSchema = createInsertSchema(coupons).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types for ecommerce
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
@@ -117,3 +162,7 @@ export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertSiteSetting = z.infer<typeof insertSiteSettingSchema>;
 export type SiteSetting = typeof siteSettings.$inferSelect;
+export type InsertBanner = z.infer<typeof insertBannerSchema>;
+export type Banner = typeof banners.$inferSelect;
+export type InsertCoupon = z.infer<typeof insertCouponSchema>;
+export type Coupon = typeof coupons.$inferSelect;
