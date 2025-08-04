@@ -198,11 +198,27 @@ export default function MysteryBoxes() {
             Mystery Boxes
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Surprise Yourself
+            Surprise Yourself With Amazing Value
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base">
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base mb-6">
             Discover amazing 3D printed items with our mystery boxes. Each box contains carefully selected items worth more than the price!
           </p>
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <div className="inline-flex items-center gap-2 bg-green-50 text-green-800 px-3 py-1 rounded-full">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Guaranteed Value
+            </div>
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-1 rounded-full">
+              <Sparkles className="w-4 h-4" />
+              Curated Selection
+            </div>
+            <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-800 px-3 py-1 rounded-full">
+              <Gift className="w-4 h-4" />
+              Perfect for Gifts
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -212,7 +228,7 @@ export default function MysteryBoxes() {
               <div className={`h-3 bg-gradient-to-r ${box.gradient}`}></div>
               
               <CardHeader className="text-center pb-4">
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${box.gradient} flex items-center justify-center text-white`}>
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${box.gradient} flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-shadow duration-300`}>
                   {box.icon}
                 </div>
                 
