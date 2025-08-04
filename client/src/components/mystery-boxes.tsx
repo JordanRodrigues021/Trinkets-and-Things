@@ -33,7 +33,7 @@ const fallbackMysteryBoxes: MysteryBox[] = [
       '1 Quality 3D printed item',
       'Surprise element',
       'Great for gifting',
-      'Value worth ₹400+'
+      'Value worth ₹350+'
     ]
   },
   {
@@ -49,7 +49,7 @@ const fallbackMysteryBoxes: MysteryBox[] = [
       'Higher quality items',
       'Random rare item chance',
       'Possible double items',
-      'Value worth ₹700+'
+      'Value worth ₹550+'
     ]
   },
   {
@@ -65,7 +65,7 @@ const fallbackMysteryBoxes: MysteryBox[] = [
       'Guaranteed rare item',
       'Chance for exclusive items',
       'Premium quality',
-      'Value worth ₹900+'
+      'Value worth ₹700+'
     ]
   }
 ];
