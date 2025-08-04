@@ -1,0 +1,94 @@
+10:59:01 PM: Netlify Build                                                 
+10:59:01 PM: ────────────────────────────────────────────────────────────────
+10:59:01 PM: ​
+10:59:01 PM: ❯ Version
+10:59:01 PM:   @netlify/build 35.0.2
+10:59:01 PM: ​
+10:59:01 PM: ❯ Flags
+10:59:01 PM:   accountId: 67cc268b94bf9f9b106743d2
+10:59:01 PM:   baseRelDir: true
+10:59:01 PM:   buildId: 6890ed909cba0ea1a78851d6
+10:59:01 PM:   deployId: 6890ed909cba0ea1a78851d8
+10:59:01 PM: ​
+10:59:01 PM: ❯ Current directory
+10:59:01 PM:   /opt/build/repo/client
+10:59:01 PM: ​
+10:59:01 PM: ❯ Config file
+10:59:01 PM:   /opt/build/repo/netlify.toml
+10:59:01 PM: ​
+10:59:01 PM: ❯ Context
+10:59:01 PM:   production
+10:59:01 PM: ​
+10:59:01 PM: build.command from netlify.toml                               
+10:59:01 PM: ────────────────────────────────────────────────────────────────
+10:59:01 PM: ​
+10:59:01 PM: $ npm run build
+10:59:01 PM: > 3d-printing-showcase@1.0.0 build
+10:59:01 PM: > vite build
+10:59:02 PM: vite v6.3.5 building for production...
+10:59:02 PM: transforming...
+10:59:02 PM: Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+10:59:02 PM:   npx update-browserslist-db@latest
+10:59:02 PM:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:59:05 PM: ✓ 1067 modules transformed.
+10:59:05 PM: ✗ Build failed in 3.06s
+10:59:05 PM: error during build:
+10:59:05 PM: [vite]: Rollup failed to resolve import "@emailjs/browser" from "/opt/build/repo/client/src/lib/email-service.ts".
+10:59:05 PM: This is most likely unintended because it can break your application at runtime.
+10:59:05 PM: If you do want to externalize this module explicitly add it to
+10:59:05 PM: `build.rollupOptions.external`
+10:59:05 PM:     at viteLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46345:15)
+10:59:05 PM:     at file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46403:18
+10:59:05 PM:     at onwarn (file:///opt/build/repo/client/node_modules/@vitejs/plugin-react/dist/index.js:90:7)
+10:59:05 PM:     at file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46401:7
+10:59:05 PM:     at onRollupLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46393:5)
+10:59:05 PM:     at onLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46043:7)
+10:59:05 PM:     at file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:20866:32
+10:59:05 PM:     at Object.logger [as onLog] (file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:22748:9)
+10:59:05 PM:     at ModuleLoader.handleInvalidResolvedId (file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:21492:26)
+10:59:05 PM:     at file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:21450:26
+10:59:05 PM: ​
+10:59:05 PM: "build.command" failed                                        
+10:59:05 PM: ────────────────────────────────────────────────────────────────
+10:59:05 PM: ​
+10:59:05 PM:   Error message
+10:59:05 PM:   Command failed with exit code 1: npm run build (https://ntl.fyi/exit-code-1)
+10:59:05 PM: ​
+10:59:05 PM:   Error location
+10:59:05 PM:   In build.command from netlify.toml:
+10:59:05 PM:   npm run build
+10:59:05 PM: ​
+10:59:05 PM:   Resolved config
+10:59:05 PM:   build:
+10:59:05 PM:     base: /opt/build/repo/client
+10:59:05 PM:     command: npm run build
+10:59:05 PM:     commandOrigin: config
+10:59:05 PM:     environment:
+10:59:05 PM:       - ADMIN_URL
+10:59:05 PM:       - DATABASE_URL
+10:59:05 PM:       - NEXT_PUBLIC_SUPABASE_ANON_KEY
+10:59:05 PM:       - NEXT_PUBLIC_SUPABASE_URL
+10:59:05 PM:       - OWNER_WHATSAPP_NUMBER
+10:59:05 PM:       - TWILIO_ACCOUNT_SID
+10:59:05 PM:       - TWILIO_AUTH_TOKEN
+10:59:05 PM:       - TWILIO_WHATSAPP_FROM
+10:59:05 PM:       - VITE_API_BASE_URL
+10:59:05 PM:       - VITE_EMAILJS_PRIVATE_KEY
+10:59:05 PM:       - VITE_EMAILJS_PUBLIC_KEY
+10:59:05 PM:       - VITE_EMAILJS_SERVICE_ID
+10:59:05 PM:       - VITE_EMAILJS_TEMPLATE_ORDER_CONFIRMED
+10:59:05 PM:       - VITE_EMAILJS_TEMPLATE_ORDER_PLACED
+10:59:05 PM:       - NODE_VERSION
+10:59:05 PM:       - VITE_SUPABASE_URL
+10:59:05 PM:       - VITE_SUPABASE_ANON_KEY
+10:59:05 PM:     publish: /opt/build/repo/client/dist
+10:59:05 PM:     publishOrigin: config
+10:59:05 PM:   functionsDirectory: /opt/build/repo/netlify/functions
+10:59:05 PM:   redirects:
+10:59:05 PM:     - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+10:59:05 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+10:59:05 PM: Failing build: Failed to build site
+10:59:06 PM: Finished processing build request in 17.06s
