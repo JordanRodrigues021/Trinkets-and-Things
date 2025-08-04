@@ -57,7 +57,7 @@ export default function CartSidebar({ children }: CartSidebarProps) {
                 {cart.map((item) => (
                   <div key={`${item.productId}-${item.selectedColor}-${item.customName || 'default'}`} className="flex gap-3 p-3 border rounded-lg">
                     <img
-                      src={item.image}
+                      src={item.imageUrl || '/placeholder-image.jpg'}
                       alt={item.productName}
                       className="w-16 h-16 object-cover rounded"
                     />

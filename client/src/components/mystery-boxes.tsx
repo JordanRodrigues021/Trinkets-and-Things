@@ -1,10 +1,11 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Gift, Star, Sparkles, Zap } from "lucide-react";
 import { useCart } from "@/contexts/cart-context";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 interface MysteryBox {
   id: string;
@@ -70,14 +71,53 @@ const mysteryBoxes: MysteryBox[] = [
 ];
 
 export default function MysteryBoxes() {
+  const [mysteryBoxes, setMysteryBoxes] = useState<MysteryBox[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addItem } = useCart();
   const { toast } = useToast();
+
+  useEffect(() => {
+    loadMysteryBoxes();
+  }, []);
+
+  const loadMysteryBoxes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('mystery_boxes')
+        .select('*')
+        .eq('is_active', 1)
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMysteryBoxes(data || []);
+    } catch (error: any) {
+      console.error('Error loading mystery boxes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddToCart = (box: MysteryBox) => {
+    // Create a mystery box icon SVG as data URL for cart display
+    const mysteryBoxIcon = `data:image/svg+xml;base64,${btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+        <rect width="100" height="100" fill="#8B5CF6" rx="15"/>
+        <path d="M30 40h40v35a5 5 0 01-5 5H35a5 5 0 01-5-5V40z" fill="#A855F7"/>
+        <path d="M25 30h50v15H25z" fill="#7C3AED"/>
+        <circle cx="40" cy="55" r="3" fill="#FFF"/>
+        <circle cx="60" cy="55" r="3" fill="#FFF"/>
+        <path d="M40 65c5 5 15 5 20 0" stroke="#FFF" stroke-width="2" fill="none"/>
+        <text x="50" y="25" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">?</text>
+      </svg>
+    `)}`;
+
     addItem({
       productId: box.id,
       productName: box.name,
       price: box.price,
       selectedColor: 'surprise',
+      imageUrl: mysteryBoxIcon,
       quantity: 1
     });
 
@@ -105,6 +145,22 @@ export default function MysteryBoxes() {
     }
   };
 
+  // Show loading or fallback to hardcoded boxes if database is empty
+  const displayBoxes = loading ? [] : (mysteryBoxes.length > 0 ? mysteryBoxes : mysteryBoxes);
+
+  if (loading) {
+    return (
+      <section id="mystery-boxes" className="py-8 sm:py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading mystery boxes...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="mystery-boxes" className="py-8 sm:py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,7 +178,7 @@ export default function MysteryBoxes() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {mysteryBoxes.map((box) => (
+          {displayBoxes.map((box) => (
             <Card key={box.id} className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-200">
               {/* Gradient Header */}
               <div className={`h-3 bg-gradient-to-r ${box.gradient}`}></div>

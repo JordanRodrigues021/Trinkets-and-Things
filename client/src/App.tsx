@@ -11,6 +11,7 @@ import AdminBanners from "@/pages/admin-banners";
 import AdminCoupons from "@/pages/admin-coupons";
 import AdminReviews from "@/pages/admin-reviews";
 import AdminSections from "@/pages/admin-sections";
+import AdminMysteryBoxes from "@/pages/admin-mystery-boxes";
 import SectionView from "@/pages/section-view";
 import DatabaseSetupPage from "@/pages/database-setup";
 import LeaveReviewPage from "@/pages/leave-review";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/admin/coupons" component={AdminCoupons} />
       <Route path="/admin/reviews" component={AdminReviews} />
       <Route path="/admin/sections" component={AdminSections} />
+      <Route path="/admin/mystery-boxes" component={AdminMysteryBoxes} />
       <Route path="/section/:slug" component={SectionView} />
       <Route path="/database-setup" component={DatabaseSetupPage} />
       <Route path="/leave-review" component={LeaveReviewPage} />

@@ -51,9 +51,15 @@ export default function PromotionalBanner() {
   const handleButtonClick = () => {
     if (banner?.button_link) {
       if (banner.button_link.startsWith('#')) {
-        // Internal anchor link
+        // Internal anchor link - support #mystery-boxes
         const element = document.querySelector(banner.button_link);
-        element?.scrollIntoView({ behavior: 'smooth' });
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else if (banner.button_link === '#mystery-boxes') {
+          // Fallback for mystery boxes if element not found
+          const mysterySection = document.getElementById('mystery-boxes');
+          mysterySection?.scrollIntoView({ behavior: 'smooth' });
+        }
       } else if (banner.button_link.startsWith('/')) {
         // Internal route
         window.location.href = banner.button_link;

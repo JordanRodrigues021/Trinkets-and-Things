@@ -59,7 +59,7 @@ export default function AddToCartButton({ product, className = '', onAddToCart }
       salePrice,
       selectedColor,
       customName: product.customizable === 1 ? customName.trim() : undefined,
-      image: product.images[0] || '',
+      imageUrl: product.images[0] || '',
     });
 
     const customText = product.customizable === 1 && customName.trim() ? ` with "${customName.trim()}"` : '';
