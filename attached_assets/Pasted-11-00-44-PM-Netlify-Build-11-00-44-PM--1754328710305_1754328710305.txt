@@ -1,0 +1,95 @@
+11:00:44 PM: Netlify Build                                                 
+11:00:44 PM: ────────────────────────────────────────────────────────────────
+11:00:44 PM: ​
+11:00:44 PM: ❯ Version
+11:00:44 PM:   @netlify/build 35.0.2
+11:00:44 PM: ​
+11:00:44 PM: ❯ Flags
+11:00:44 PM:   accountId: 67cc268b94bf9f9b106743d2
+11:00:44 PM:   baseRelDir: true
+11:00:44 PM:   buildId: 6890ee36c3d1bc000865017a
+11:00:44 PM:   deployId: 6890ee36c3d1bc000865017c
+11:00:44 PM: ​
+11:00:44 PM: ❯ Current directory
+11:00:44 PM:   /opt/build/repo/client
+11:00:44 PM: ​
+11:00:44 PM: ❯ Config file
+11:00:44 PM:   /opt/build/repo/netlify.toml
+11:00:44 PM: ​
+11:00:44 PM: ❯ Context
+11:00:44 PM:   production
+11:00:44 PM: ​
+11:00:44 PM: build.command from netlify.toml                               
+11:00:44 PM: ────────────────────────────────────────────────────────────────
+11:00:44 PM: ​
+11:00:44 PM: $ npm run build
+11:00:44 PM: > 3d-printing-showcase@1.0.0 build
+11:00:44 PM: > vite build
+11:00:44 PM: vite v6.3.5 building for production...
+11:00:44 PM: transforming...
+11:00:44 PM: Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+11:00:44 PM:   npx update-browserslist-db@latest
+11:00:44 PM:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+11:00:46 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+11:00:46 PM: ✓ 68 modules transformed.
+11:00:46 PM: ✗ Build failed in 1.76s
+11:00:46 PM: error during build:
+11:00:46 PM: [vite]: Rollup failed to resolve import "@emailjs/browser" from "/opt/build/repo/client/src/lib/email-service.ts".
+11:00:46 PM: This is most likely unintended because it can break your application at runtime.
+11:00:46 PM: If you do want to externalize this module explicitly add it to
+11:00:46 PM: `build.rollupOptions.external`
+11:00:46 PM:     at viteLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46345:15)
+11:00:46 PM:     at file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46403:18
+11:00:46 PM:     at onwarn (file:///opt/build/repo/client/node_modules/@vitejs/plugin-react/dist/index.js:90:7)
+11:00:46 PM:     at file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46401:7
+11:00:46 PM:     at onRollupLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46393:5)
+11:00:46 PM:     at onLog (file:///opt/build/repo/client/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46043:7)
+11:00:46 PM:     at file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:20866:32
+11:00:46 PM:     at Object.logger [as onLog] (file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:22748:9)
+11:00:46 PM:     at ModuleLoader.handleInvalidResolvedId (file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:21492:26)
+11:00:46 PM:     at file:///opt/build/repo/client/node_modules/rollup/dist/es/shared/node-entry.js:21450:26
+11:00:46 PM: ​
+11:00:46 PM: "build.command" failed                                        
+11:00:46 PM: ────────────────────────────────────────────────────────────────
+11:00:46 PM: ​
+11:00:46 PM:   Error message
+11:00:46 PM:   Command failed with exit code 1: npm run build (https://ntl.fyi/exit-code-1)
+11:00:46 PM: ​
+11:00:46 PM:   Error location
+11:00:46 PM:   In build.command from netlify.toml:
+11:00:46 PM:   npm run build
+11:00:46 PM: ​
+11:00:46 PM:   Resolved config
+11:00:46 PM:   build:
+11:00:46 PM:     base: /opt/build/repo/client
+11:00:46 PM:     command: npm run build
+11:00:46 PM:     commandOrigin: config
+11:00:46 PM:     environment:
+11:00:46 PM:       - ADMIN_URL
+11:00:46 PM:       - DATABASE_URL
+11:00:46 PM:       - NEXT_PUBLIC_SUPABASE_ANON_KEY
+11:00:46 PM:       - NEXT_PUBLIC_SUPABASE_URL
+11:00:46 PM:       - OWNER_WHATSAPP_NUMBER
+11:00:46 PM:       - TWILIO_ACCOUNT_SID
+11:00:46 PM:       - TWILIO_AUTH_TOKEN
+11:00:46 PM:       - TWILIO_WHATSAPP_FROM
+11:00:46 PM:       - VITE_API_BASE_URL
+11:00:46 PM:       - VITE_EMAILJS_PRIVATE_KEY
+11:00:46 PM:       - VITE_EMAILJS_PUBLIC_KEY
+11:00:46 PM:       - VITE_EMAILJS_SERVICE_ID
+11:00:46 PM:       - VITE_EMAILJS_TEMPLATE_ORDER_CONFIRMED
+11:00:46 PM:       - VITE_EMAILJS_TEMPLATE_ORDER_PLACED
+11:00:46 PM:       - NODE_VERSION
+11:00:46 PM:       - VITE_SUPABASE_URL
+11:00:46 PM:       - VITE_SUPABASE_ANON_KEY
+11:00:46 PM:     publish: /opt/build/repo/client/dist
+11:00:46 PM:     publishOrigin: config
+11:00:46 PM:   functionsDirectory: /opt/build/repo/netlify/functions
+11:00:46 PM:   redirects:
+11:00:46 PM:     - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+11:00:46 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+11:00:46 PM: Failing build: Failed to build site
+11:00:47 PM: Finished processing build request in 15.367s

@@ -23,8 +23,9 @@ This project has been fully configured for Netlify static deployment with Supaba
 - **WhatsApp Order Notifications**: Serverless WhatsApp messaging system using Netlify Functions and Twilio API
 - **Unified Color System**: Centralized color mapping system with 30+ colors and consistent swatch display
 - **Customizable Products**: Admin can mark products as customizable, allowing customers to add custom text (perfect for keychains, nameplates, etc.)
-- **Free Email Notifications**: Integrated EmailJS for completely free automated email notifications (order confirmation, order confirmed, order shipped)
-- **Admin Order Management**: Dedicated admin interface for managing orders and sending status update emails with tracking information
+- **Free Email Notifications**: Integrated EmailJS for completely free automated email notifications (order placed, order confirmed)
+- **Admin Order Management**: Dedicated admin interface for managing orders and sending status update emails
+- **EmailJS Integration**: @emailjs/browser dependency added to client/package.json for Netlify deployment compatibility
 
 DO NOT modify the deployment configuration without reading the agent guide first.
 
