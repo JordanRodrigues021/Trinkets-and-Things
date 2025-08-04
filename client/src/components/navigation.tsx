@@ -58,6 +58,12 @@ export default function Navigation() {
               Products
             </button>
             <button 
+              onClick={() => scrollToSection('mystery-boxes')}
+              className="text-gray-700 hover:text-primary transition-colors duration-300"
+            >
+              Mystery Boxes
+            </button>
+            <button 
               onClick={() => scrollToSection('reviews')}
               className="text-gray-700 hover:text-primary transition-colors duration-300"
             >
@@ -129,6 +135,12 @@ export default function Navigation() {
                 className="text-left text-gray-700 hover:text-primary transition-colors duration-300"
               >
                 Products
+              </button>
+              <button 
+                onClick={() => scrollToSection('mystery-boxes')}
+                className="text-left text-gray-700 hover:text-primary transition-colors duration-300"
+              >
+                Mystery Boxes
               </button>
               <button 
                 onClick={() => scrollToSection('reviews')}

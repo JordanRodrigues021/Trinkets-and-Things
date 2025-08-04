@@ -2,6 +2,7 @@ import Navigation from "@/components/navigation";
 import PromotionalBanner from "@/components/promotional-banner";
 import HeroSection from "@/components/hero-section";
 import SectionsDisplay from "@/components/sections-display";
+import MysteryBoxes from "@/components/mystery-boxes";
 import AboutSection from "@/components/about-section";
 import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
@@ -30,6 +31,9 @@ export default function Home() {
           <SectionsDisplay />
         </div>
       </section>
+
+      {/* Mystery Boxes Section */}
+      <MysteryBoxes />
       
       {/* Customer Reviews Section */}
       <section id="reviews" className="py-8 sm:py-16 bg-white dark:bg-gray-800">
