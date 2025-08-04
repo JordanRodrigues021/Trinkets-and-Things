@@ -15,7 +15,7 @@ interface Order {
   customer_phone: string;
   total_amount: string;
   payment_method: string;
-  status: string;
+  order_status: string;
   created_at: string;
   email_sent_placed?: boolean;
   email_sent_confirmed?: boolean;
@@ -68,13 +68,13 @@ export default function AdminOrders() {
     try {
       const { error } = await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update({ order_status: newStatus })
         .eq('id', orderId);
 
       if (error) throw error;
 
       setOrders(orders.map(order => 
-        order.id === orderId ? { ...order, status: newStatus } : order
+        order.id === orderId ? { ...order, order_status: newStatus } : order
       ));
 
       toast({
@@ -124,7 +124,7 @@ export default function AdminOrders() {
         // Update local state
         setOrders(orders.map(o => 
           o.id === order.id 
-            ? { ...o, [emailField]: true, ...(updateStatus && status === 'confirmed' ? { status } : {}) }
+            ? { ...o, [emailField]: true, ...(updateStatus && status === 'confirmed' ? { order_status: status } : {}) }
             : o
         ));
         
@@ -196,12 +196,12 @@ export default function AdminOrders() {
                 <div>
                   <CardTitle className="text-lg">Order #{order.id}</CardTitle>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge className={getStatusColor(order.status)}>
-                      {getStatusIcon(order.status)}
-                      <span className="ml-1">{order.status.toUpperCase()}</span>
+                    <Badge className={getStatusColor(order.order_status)}>
+                      {getStatusIcon(order.order_status)}
+                      <span className="ml-1">{order.order_status?.toUpperCase() || 'PENDING'}</span>
                     </Badge>
                     <Badge variant="outline">
-                      {order.payment_method.toUpperCase()}
+                      {order.payment_method?.toUpperCase() || 'UNKNOWN'}
                     </Badge>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function AdminOrders() {
 
               <div className="flex flex-wrap gap-2">
                 {/* Auto-confirm order with email */}
-                {order.status === 'placed' && (
+                {order.order_status === 'placed' && (
                   <Button
                     size="sm"
                     onClick={() => sendStatusEmail(order, 'confirmed')}
@@ -252,7 +252,7 @@ export default function AdminOrders() {
                 )}
 
                 {/* Mark as completed */}
-                {order.status === 'confirmed' && (
+                {order.order_status === 'confirmed' && (
                   <Button
                     size="sm"
                     onClick={() => updateOrderStatus(order.id, 'completed')}

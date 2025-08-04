@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS orders (
   order_status TEXT NOT NULL DEFAULT 'placed' CHECK (order_status IN ('placed', 'confirmed', 'ready', 'completed', 'cancelled')),
   shipping_address TEXT NOT NULL DEFAULT 'Pickup from A Level Classroom at Don Bosco International School',
   notes TEXT,
+  email_sent_placed BOOLEAN DEFAULT FALSE, -- Tracks if "Order Placed" email was sent
+  email_sent_confirmed BOOLEAN DEFAULT FALSE, -- Tracks if "Order Confirmed" email was sent
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
