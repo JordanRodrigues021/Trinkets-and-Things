@@ -118,6 +118,25 @@ export default function AdminBanners() {
 
   const onSubmit = async (data: BannerFormData) => {
     try {
+      // Check for duplicate Diwali banners if creating a new one
+      if (!editingBanner && (data.title.toLowerCase().includes('diwali') || data.description.toLowerCase().includes('diwali'))) {
+        const { data: existingBanners, error: checkError } = await supabase
+          .from('banners')
+          .select('*')
+          .or('title.ilike.%diwali%,description.ilike.%diwali%');
+        
+        if (checkError) throw checkError;
+        
+        if (existingBanners && existingBanners.length > 0) {
+          toast({
+            title: "Duplicate banner detected",
+            description: "A Diwali banner already exists. Please edit the existing one or create a different banner.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const bannerData = {
         ...data,
         button_text: data.button_text || null,
@@ -314,25 +333,50 @@ export default function AdminBanners() {
                 <div className="space-y-2">
                   <Label htmlFor="button_link">Button Link (Optional)</Label>
                   <Input id="button_link" {...form.register('button_link')} placeholder="e.g., #products or /sale" />
-                  {sections.length > 0 && (
-                    <div className="mt-2">
-                      <Label className="text-xs text-muted-foreground">Quick Select Section:</Label>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {sections.map((section) => (
-                          <Button
-                            key={section.id}
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            onClick={() => form.setValue('button_link', `/section/${section.slug}`)}
-                            className="text-xs"
-                          >
-                            {section.name}
-                          </Button>
-                        ))}
-                      </div>
+                  <div className="mt-2">
+                    <Label className="text-xs text-muted-foreground">Quick Select Section:</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => form.setValue('button_link', '#mystery-boxes')}
+                        className="text-xs"
+                      >
+                        Mystery Boxes
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => form.setValue('button_link', '#products')}
+                        className="text-xs"
+                      >
+                        Products
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => form.setValue('button_link', '#contact')}
+                        className="text-xs"
+                      >
+                        Contact
+                      </Button>
+                      {sections.map((section) => (
+                        <Button
+                          key={section.id}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => form.setValue('button_link', `/section/${section.slug}`)}
+                          className="text-xs"
+                        >
+                          {section.name}
+                        </Button>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
