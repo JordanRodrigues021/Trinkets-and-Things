@@ -230,7 +230,7 @@ export default function MysteryBoxes() {
               <CardFooter className="pt-0">
                 <Button 
                   onClick={() => handleAddToCart(box)}
-                  className={`w-full bg-gradient-to-r ${box.gradient} hover:opacity-90 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105`}
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-10 px-4 w-full undefined hover:opacity-90 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105 bg-[#5035ab]"
                 >
                   <Gift className="w-4 h-4 mr-2" />
                   Add Mystery Box
