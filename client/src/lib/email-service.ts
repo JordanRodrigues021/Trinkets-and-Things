@@ -4,7 +4,6 @@ import emailjs from '@emailjs/browser';
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const TEMPLATE_ORDER_PLACED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_PLACED;
 const TEMPLATE_ORDER_CONFIRMED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_CONFIRMED;
-const TEMPLATE_ORDER_SHIPPED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_SHIPPED;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 interface EmailData {
@@ -13,8 +12,7 @@ interface EmailData {
   order_id: string;
   order_items: string;
   order_total: string;
-  order_status: 'placed' | 'confirmed' | 'shipped';
-  tracking_number?: string;
+  order_status: 'placed' | 'confirmed';
 }
 
 export const sendOrderEmail = async (data: EmailData): Promise<boolean> => {
@@ -39,7 +37,6 @@ export const sendOrderEmail = async (data: EmailData): Promise<boolean> => {
       order_items: data.order_items,
       order_total: data.order_total,
       order_status: data.order_status,
-      tracking_number: data.tracking_number || '',
     };
 
     // Send email using the correct template
@@ -63,8 +60,6 @@ const getTemplateId = (status: string): string | null => {
       return TEMPLATE_ORDER_PLACED;
     case 'confirmed':
       return TEMPLATE_ORDER_CONFIRMED;
-    case 'shipped':
-      return TEMPLATE_ORDER_SHIPPED;
     default:
       return TEMPLATE_ORDER_PLACED; // fallback to order placed template
   }
