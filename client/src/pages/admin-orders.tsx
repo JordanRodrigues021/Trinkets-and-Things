@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { sendOrderEmail } from '@/lib/email-service';
@@ -19,6 +17,8 @@ interface Order {
   payment_method: string;
   status: string;
   created_at: string;
+  email_sent_placed?: boolean;
+  email_sent_confirmed?: boolean;
   order_items: Array<{
     product_name: string;
     quantity: number;
@@ -30,8 +30,6 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
-  const [trackingNumber, setTrackingNumber] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -93,7 +91,7 @@ export default function AdminOrders() {
     }
   };
 
-  const sendStatusEmail = async (order: Order, status: 'confirmed' | 'shipped', tracking?: string) => {
+  const sendStatusEmail = async (order: Order, status: 'placed' | 'confirmed', updateStatus: boolean = true) => {
     setSendingEmail(order.id);
     
     try {
@@ -108,16 +106,31 @@ export default function AdminOrders() {
         order_items: orderItems,
         order_total: order.total_amount,
         order_status: status,
-        tracking_number: tracking
       });
 
       if (emailSuccess) {
-        // Update order status
-        await updateOrderStatus(order.id, status);
+        // Update email tracking
+        const emailField = status === 'placed' ? 'email_sent_placed' : 'email_sent_confirmed';
+        await supabase
+          .from('orders')
+          .update({ [emailField]: true })
+          .eq('id', order.id);
+
+        // Update order status if requested
+        if (updateStatus && status === 'confirmed') {
+          await updateOrderStatus(order.id, status);
+        }
+        
+        // Update local state
+        setOrders(orders.map(o => 
+          o.id === order.id 
+            ? { ...o, [emailField]: true, ...(updateStatus && status === 'confirmed' ? { status } : {}) }
+            : o
+        ));
         
         toast({
           title: "Email sent successfully!",
-          description: `${status} email sent to ${order.customer_email}`,
+          description: `${status === 'placed' ? 'Order confirmation' : 'Order confirmed'} email sent to ${order.customer_email}`,
         });
       } else {
         toast({
@@ -135,8 +148,6 @@ export default function AdminOrders() {
       });
     } finally {
       setSendingEmail(null);
-      setSelectedOrder(null);
-      setTrackingNumber('');
     }
   };
 
@@ -227,7 +238,8 @@ export default function AdminOrders() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {order.status === 'pending' && (
+                {/* Auto-confirm order with email */}
+                {order.status === 'placed' && (
                   <Button
                     size="sm"
                     onClick={() => sendStatusEmail(order, 'confirmed')}
@@ -239,46 +251,42 @@ export default function AdminOrders() {
                   </Button>
                 )}
 
+                {/* Mark as completed */}
                 {order.status === 'confirmed' && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        onClick={() => setSelectedOrder(order)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <Truck className="w-4 h-4 mr-2" />
-                        Mark as Shipped
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Mark Order as Shipped</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="tracking">Tracking Number (Optional)</Label>
-                          <Input
-                            id="tracking"
-                            value={trackingNumber}
-                            onChange={(e) => setTrackingNumber(e.target.value)}
-                            placeholder="Enter tracking number"
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => sendStatusEmail(order, 'shipped', trackingNumber)}
-                            disabled={sendingEmail === order.id}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <Mail className="w-4 h-4 mr-2" />
-                            {sendingEmail === order.id ? 'Sending...' : 'Send Shipping Email'}
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    size="sm"
+                    onClick={() => updateOrderStatus(order.id, 'completed')}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Mark Completed
+                  </Button>
                 )}
+
+                {/* Manual email sending buttons */}
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => sendStatusEmail(order, 'placed', false)}
+                    disabled={sendingEmail === order.id}
+                    className={order.email_sent_placed ? 'bg-green-50 border-green-200' : ''}
+                  >
+                    <Mail className="w-4 h-4 mr-1" />
+                    {order.email_sent_placed ? 'Resend' : 'Send'} Order Email
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => sendStatusEmail(order, 'confirmed', false)}
+                    disabled={sendingEmail === order.id}
+                    className={order.email_sent_confirmed ? 'bg-green-50 border-green-200' : ''}
+                  >
+                    <Mail className="w-4 h-4 mr-1" />
+                    {order.email_sent_confirmed ? 'Resend' : 'Send'} Confirmed Email
+                  </Button>
+                </div>
 
                 <Button
                   size="sm"
