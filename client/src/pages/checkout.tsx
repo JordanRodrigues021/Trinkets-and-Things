@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/cart-context';
 import { supabase } from '@/lib/supabase';
+import { sendOrderEmail, formatCartItemsForEmail, calculateCartTotal } from '@/lib/email-service';
 import { ArrowLeft, CreditCard, Truck, QrCode } from 'lucide-react';
 import PriceDisplay from '@/components/price-display';
 import CouponInput from '@/components/coupon-input';
@@ -142,6 +143,33 @@ export default function Checkout() {
             current_uses: appliedCoupon.current_uses + 1 
           })
           .eq('id', appliedCoupon.id);
+      }
+
+      // Send email notification to customer
+      try {
+        const emailSuccess = await sendOrderEmail({
+          to_email: data.customerEmail,
+          customer_name: data.customerName,
+          order_id: order.id,
+          order_items: formatCartItemsForEmail(cart.map(item => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: item.salePrice || item.price
+          }))),
+          order_total: finalTotalAmount.toString(),
+          order_status: 'placed'
+        });
+
+        if (emailSuccess) {
+          toast({
+            title: "Order confirmation sent!",
+            description: "Check your email for order details.",
+            duration: 3000,
+          });
+        }
+      } catch (emailError) {
+        console.error('Email notification error:', emailError);
+        // Continue with order completion even if email fails
       }
 
       // Send WhatsApp notification to owner

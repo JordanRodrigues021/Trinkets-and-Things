@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square, Megaphone, Tag, Database as DatabaseIcon, Star, Layers, Gift } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, LogOut, Package, Users, Download, Upload, FileText, ShoppingCart, Settings, Check, X, Eye, Copy, CheckSquare, Square, Megaphone, Tag, Database as DatabaseIcon, Star, Layers, Gift, Mail } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -763,6 +763,14 @@ export default function AdminDashboard() {
             >
               <Star className="w-4 h-4 mr-2" />
               Reviews
+            </Button>
+            <Button
+              variant={activeTab === 'orders-manage' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLocation('/admin/orders')}
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Order Emails
             </Button>
             <Button
               variant={activeTab === 'sections' ? 'default' : 'ghost'}

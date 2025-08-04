@@ -10,6 +10,7 @@ import AdminProductForm from "@/pages/admin-product-form";
 import AdminBanners from "@/pages/admin-banners";
 import AdminCoupons from "@/pages/admin-coupons";
 import AdminReviews from "@/pages/admin-reviews";
+import AdminOrders from "@/pages/admin-orders";
 import AdminSections from "@/pages/admin-sections";
 import AdminMysteryBoxes from "@/pages/admin-mystery-boxes";
 import SectionView from "@/pages/section-view";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/admin/banners" component={AdminBanners} />
       <Route path="/admin/coupons" component={AdminCoupons} />
       <Route path="/admin/reviews" component={AdminReviews} />
+      <Route path="/admin/orders" component={AdminOrders} />
       <Route path="/admin/sections" component={AdminSections} />
       <Route path="/admin/mystery-boxes" component={AdminMysteryBoxes} />
       <Route path="/section/:slug" component={SectionView} />
