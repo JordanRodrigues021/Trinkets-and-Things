@@ -43,6 +43,28 @@ export type Product = typeof products.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
 
+// Mystery boxes table
+export const mysteryBoxes = pgTable("mystery_boxes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  description: text("description").notNull(),
+  contents: text("contents").notNull(),
+  rarity: text("rarity").notNull(), // 'uncommon', 'rare', 'super-rare'
+  features: text("features").array().notNull(),
+  isActive: integer("is_active").notNull().default(1),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertMysteryBoxSchema = createInsertSchema(mysteryBoxes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertMysteryBox = z.infer<typeof insertMysteryBoxSchema>;
+export type MysteryBox = typeof mysteryBoxes.$inferSelect;
+
 // Keep existing user types for compatibility
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

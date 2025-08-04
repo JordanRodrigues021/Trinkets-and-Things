@@ -18,8 +18,13 @@ export async function setupDatabase() {
       .select('id')
       .limit(1);
 
+    const { error: mysteryBoxError } = await supabase
+      .from('mystery_boxes')
+      .select('id')
+      .limit(1);
+
     // If all queries succeed, database is fully set up
-    if (!reviewFieldError && !bannerCheckError && !customSectionError) {
+    if (!reviewFieldError && !bannerCheckError && !customSectionError && !mysteryBoxError) {
       console.log('✅ Database is fully configured');
       return { success: true, message: 'Database is fully configured' };
     }
@@ -105,7 +110,34 @@ ALTER TABLE section_products DISABLE ROW LEVEL SECURITY;
 ALTER TABLE banners DISABLE ROW LEVEL SECURITY;
 ALTER TABLE coupons DISABLE ROW LEVEL SECURITY;
 
--- 9. Insert sample data for new features (optional)
+-- 9. Create mystery_boxes table for mystery box products (if missing)
+CREATE TABLE IF NOT EXISTS mystery_boxes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  description TEXT NOT NULL,
+  contents TEXT NOT NULL,
+  rarity TEXT NOT NULL CHECK (rarity IN ('uncommon', 'rare', 'super-rare')),
+  features TEXT[] NOT NULL DEFAULT '{}',
+  is_active INTEGER NOT NULL DEFAULT 1,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. Disable RLS for mystery boxes table (if it exists)
+ALTER TABLE mystery_boxes DISABLE ROW LEVEL SECURITY;
+
+-- 11. Insert sample mystery boxes data (if missing)
+INSERT INTO mystery_boxes (name, price, description, contents, rarity, features, display_order) VALUES
+('Starter Mystery Box', 299.00, 'Perfect for beginners to discover our quality', '1 Uncommon Item', 'uncommon', 
+ ARRAY['1 Quality 3D printed item', 'Surprise element', 'Great for gifting', 'Value worth ₹400+'], 10),
+('Explorer Mystery Box', 499.00, 'For those seeking better surprises', '1 Rare Item OR 2 Uncommon Items', 'rare',
+ ARRAY['Higher quality items', 'Random rare item chance', 'Possible double items', 'Value worth ₹700+'], 20),
+('Premium Mystery Box', 599.00, 'Ultimate surprise experience', '1 Guaranteed Rare + Chance for Super Special', 'super-rare',
+ ARRAY['Guaranteed rare item', 'Chance for exclusive items', 'Premium quality', 'Value worth ₹900+'], 30)
+ON CONFLICT (id) DO NOTHING;
+
+-- 12. Insert sample data for other new features (optional)
 INSERT INTO custom_sections (name, slug, description, display_order) VALUES
 ('Featured Items', 'featured', 'Our most popular products', 10),
 ('New Arrivals', 'new-arrivals', 'Latest additions', 20)
