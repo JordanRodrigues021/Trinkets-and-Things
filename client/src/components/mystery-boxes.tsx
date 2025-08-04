@@ -228,7 +228,7 @@ export default function MysteryBoxes() {
               <div className={`h-3 bg-gradient-to-r ${box.gradient}`}></div>
               
               <CardHeader className="text-center pb-4">
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${box.gradient} flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-shadow duration-300`}>
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${box.gradient} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300 text-[#c49018]`}>
                   {box.icon}
                 </div>
                 
