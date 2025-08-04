@@ -11,6 +11,7 @@ export default function Footer() {
   const quickLinks = [
     { name: "Home", id: "home" },
     { name: "Products", id: "products" },
+    { name: "Mystery Boxes", id: "mystery-boxes" },
     { name: "About", id: "about" },
     { name: "Contact", id: "contact" },
   ];

@@ -19,7 +19,7 @@ interface MysteryBox {
   features: string[];
 }
 
-const mysteryBoxes: MysteryBox[] = [
+const fallbackMysteryBoxes: MysteryBox[] = [
   {
     id: 'mystery-299',
     name: 'Starter Mystery Box',
@@ -28,7 +28,7 @@ const mysteryBoxes: MysteryBox[] = [
     contents: '1 Uncommon Item',
     rarity: 'uncommon',
     icon: <Gift className="w-8 h-8" />,
-    gradient: 'from-blue-500 to-purple-600',
+    gradient: 'from-green-500 to-green-600',
     features: [
       '1 Quality 3D printed item',
       'Surprise element',
@@ -44,7 +44,7 @@ const mysteryBoxes: MysteryBox[] = [
     contents: '1 Rare Item OR 2 Uncommon Items',
     rarity: 'rare',
     icon: <Star className="w-8 h-8" />,
-    gradient: 'from-purple-500 to-pink-600',
+    gradient: 'from-blue-500 to-blue-600',
     features: [
       'Higher quality items',
       'Random rare item chance',
@@ -60,7 +60,7 @@ const mysteryBoxes: MysteryBox[] = [
     contents: '1 Guaranteed Rare + Chance for Super Special',
     rarity: 'super-rare',
     icon: <Sparkles className="w-8 h-8" />,
-    gradient: 'from-yellow-500 to-red-600',
+    gradient: 'from-yellow-400 via-yellow-500 to-amber-600',
     features: [
       'Guaranteed rare item',
       'Chance for exclusive items',
@@ -99,16 +99,45 @@ export default function MysteryBoxes() {
   };
 
   const handleAddToCart = (box: MysteryBox) => {
-    // Create a mystery box icon SVG as data URL for cart display
+    // Create a mystery box icon SVG with appropriate colors based on box type
+    const getBoxColors = (boxId: string) => {
+      switch (boxId) {
+        case 'mystery-299':
+          return { main: '#10B981', secondary: '#059669', accent: '#047857' }; // Green
+        case 'mystery-499':
+          return { main: '#3B82F6', secondary: '#2563EB', accent: '#1D4ED8' }; // Blue
+        case 'mystery-599':
+          return { main: '#F59E0B', secondary: '#D97706', accent: '#B45309' }; // Gold
+        default:
+          return { main: '#8B5CF6', secondary: '#A855F7', accent: '#7C3AED' }; // Purple
+      }
+    };
+
+    const colors = getBoxColors(box.id);
     const mysteryBoxIcon = `data:image/svg+xml;base64,${btoa(`
       <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-        <rect width="100" height="100" fill="#8B5CF6" rx="15"/>
-        <path d="M30 40h40v35a5 5 0 01-5 5H35a5 5 0 01-5-5V40z" fill="#A855F7"/>
-        <path d="M25 30h50v15H25z" fill="#7C3AED"/>
-        <circle cx="40" cy="55" r="3" fill="#FFF"/>
-        <circle cx="60" cy="55" r="3" fill="#FFF"/>
-        <path d="M40 65c5 5 15 5 20 0" stroke="#FFF" stroke-width="2" fill="none"/>
-        <text x="50" y="25" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">?</text>
+        <defs>
+          <linearGradient id="boxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${colors.main};stop-opacity:1" />
+            <stop offset="50%" style="stop-color:${colors.secondary};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${colors.accent};stop-opacity:1" />
+          </linearGradient>
+          <filter id="shine" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/> 
+            </feMerge>
+          </filter>
+        </defs>
+        <rect width="100" height="100" fill="url(#boxGradient)" rx="15" filter="url(#shine)"/>
+        <path d="M30 40h40v35a5 5 0 01-5 5H35a5 5 0 01-5-5V40z" fill="${colors.secondary}" opacity="0.9"/>
+        <path d="M25 30h50v15H25z" fill="${colors.accent}" opacity="0.8"/>
+        <rect x="47" y="20" width="6" height="60" fill="#FFF" opacity="0.3"/>
+        <rect x="20" y="47" width="60" height="6" fill="#FFF" opacity="0.3"/>
+        <circle cx="50" y="25" r="8" fill="#FFF" opacity="0.2"/>
+        <text x="50" y="30" text-anchor="middle" fill="#FFF" font-size="14" font-weight="bold">?</text>
+        ${box.id === 'mystery-599' ? '<circle cx="25" cy="25" r="3" fill="#FFD700" opacity="0.8"/><circle cx="75" cy="75" r="2" fill="#FFD700" opacity="0.6"/>' : ''}
       </svg>
     `)}`;
 
@@ -117,8 +146,7 @@ export default function MysteryBoxes() {
       productName: box.name,
       price: box.price,
       selectedColor: 'surprise',
-      imageUrl: mysteryBoxIcon,
-      quantity: 1
+      imageUrl: mysteryBoxIcon
     });
 
     toast({
@@ -146,7 +174,7 @@ export default function MysteryBoxes() {
   };
 
   // Show loading or fallback to hardcoded boxes if database is empty
-  const displayBoxes = loading ? [] : (mysteryBoxes.length > 0 ? mysteryBoxes : mysteryBoxes);
+  const displayBoxes = loading ? [] : (mysteryBoxes.length > 0 ? mysteryBoxes : fallbackMysteryBoxes);
 
   if (loading) {
     return (
