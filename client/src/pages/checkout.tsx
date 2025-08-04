@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/cart-context';
 import { supabase } from '@/lib/supabase';
-import { sendOrderEmail, formatCartItemsForEmail, calculateCartTotal } from '@/lib/email-service';
+import { sendOrderEmail, formatCartItemsForEmail } from '@/lib/email-service';
 import { ArrowLeft, CreditCard, Truck, QrCode } from 'lucide-react';
 import PriceDisplay from '@/components/price-display';
 import CouponInput from '@/components/coupon-input';

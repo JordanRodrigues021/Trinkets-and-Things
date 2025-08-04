@@ -2,7 +2,9 @@ import emailjs from '@emailjs/browser';
 
 // EmailJS configuration - these will be environment variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const TEMPLATE_ORDER_PLACED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_PLACED;
+const TEMPLATE_ORDER_CONFIRMED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_CONFIRMED;
+const TEMPLATE_ORDER_SHIPPED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_SHIPPED;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 interface EmailData {
@@ -17,8 +19,11 @@ interface EmailData {
 
 export const sendOrderEmail = async (data: EmailData): Promise<boolean> => {
   try {
+    // Get the correct template ID based on order status
+    const templateId = getTemplateId(data.order_status);
+    
     // Check if EmailJS is configured
-    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+    if (!SERVICE_ID || !templateId || !PUBLIC_KEY) {
       console.warn('EmailJS not configured. Email notifications disabled.');
       return false;
     }
@@ -35,14 +40,12 @@ export const sendOrderEmail = async (data: EmailData): Promise<boolean> => {
       order_total: data.order_total,
       order_status: data.order_status,
       tracking_number: data.tracking_number || '',
-      subject: getEmailSubject(data.order_status),
-      message: getEmailMessage(data),
     };
 
-    // Send email
+    // Send email using the correct template
     const response = await emailjs.send(
       SERVICE_ID,
-      TEMPLATE_ID,
+      templateId,
       templateParams
     );
 
@@ -54,84 +57,16 @@ export const sendOrderEmail = async (data: EmailData): Promise<boolean> => {
   }
 };
 
-const getEmailSubject = (status: string): string => {
+const getTemplateId = (status: string): string | null => {
   switch (status) {
     case 'placed':
-      return 'Order Confirmation - Trinkets and Things';
+      return TEMPLATE_ORDER_PLACED;
     case 'confirmed':
-      return 'Order Confirmed - Trinkets and Things';
+      return TEMPLATE_ORDER_CONFIRMED;
     case 'shipped':
-      return 'Order Shipped - Trinkets and Things';
+      return TEMPLATE_ORDER_SHIPPED;
     default:
-      return 'Order Update - Trinkets and Things';
-  }
-};
-
-const getEmailMessage = (data: EmailData): string => {
-  const { order_status, customer_name, order_id, order_items, order_total, tracking_number } = data;
-  
-  switch (order_status) {
-    case 'placed':
-      return `
-Dear ${customer_name},
-
-Thank you for your order! We've received your order and are processing it.
-
-Order Details:
-Order ID: ${order_id}
-Items: ${order_items}
-Total: ₹${order_total}
-
-We'll send you another email once your order is confirmed and ready for shipping.
-
-Best regards,
-Trinkets and Things Team
-      `;
-    
-    case 'confirmed':
-      return `
-Dear ${customer_name},
-
-Great news! Your order has been confirmed and is being prepared for shipping.
-
-Order Details:
-Order ID: ${order_id}
-Items: ${order_items}
-Total: ₹${order_total}
-
-Your order will be shipped within 1-2 business days. We'll notify you with tracking information once it's on its way.
-
-Best regards,
-Trinkets and Things Team
-      `;
-    
-    case 'shipped':
-      return `
-Dear ${customer_name},
-
-Your order is on its way! 
-
-Order Details:
-Order ID: ${order_id}
-Items: ${order_items}
-Total: ₹${order_total}
-${tracking_number ? `Tracking Number: ${tracking_number}` : ''}
-
-You can expect delivery within 3-5 business days. Thank you for choosing Trinkets and Things!
-
-Best regards,
-Trinkets and Things Team
-      `;
-    
-    default:
-      return `
-Dear ${customer_name},
-
-Your order #${order_id} has been updated.
-
-Best regards,
-Trinkets and Things Team
-      `;
+      return TEMPLATE_ORDER_PLACED; // fallback to order placed template
   }
 };
 
@@ -142,8 +77,3 @@ export const formatCartItemsForEmail = (cartItems: any[]): string => {
     .join('\n');
 };
 
-// Helper function to calculate total
-export const calculateCartTotal = (cartItems: any[]): string => {
-  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  return total.toString();
-};
